@@ -109,7 +109,8 @@ async function main() {
   // 5. Create Evaluations
   await prisma.modelEvaluation.upsert({
     where: {
-      promptId_aiModelId: {
+      userId_promptId_aiModelId: {
+        userId: user.id,
         promptId: prompt1.id,
         aiModelId: aiModels[1].id, // Claude
       },
@@ -118,9 +119,9 @@ async function main() {
     create: {
       rating: 5,
       comment: "Claude is exceptionally good at following the strict output constraint.",
-      outputText: "export const Sidebar = () => { ... }",
       promptId: prompt1.id,
       aiModelId: aiModels[1].id,
+      userId: user.id,
     },
   });
 

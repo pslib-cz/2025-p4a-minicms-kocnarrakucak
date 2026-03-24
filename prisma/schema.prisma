@@ -36,6 +36,7 @@ model User {
   emailVerified DateTime?
   image         String?
   prompts       Prompt[]
+  evaluations   ModelEvaluation[]
   accounts      Account[]
   sessions      Session[]
 }
@@ -84,16 +85,16 @@ model ModelEvaluation {
   rating  Int     @default(0) // 1-5 hvězdiček
   comment String?
 
-  outputImageUrl String?
-  outputText     String?
-
   promptId String
   prompt   Prompt @relation(fields: [promptId], references: [id], onDelete: Cascade)
 
   aiModelId String
   aiModel   AiModel @relation(fields: [aiModelId], references: [id], onDelete: Cascade)
 
-  @@unique([promptId, aiModelId]) // Jeden prompt můžeš pro každý model hodnotit jen jednou
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, promptId, aiModelId]) // Jeden uživatel může model pro každý prompt hodnotit jen jednou
 }
 
 model Tag {
