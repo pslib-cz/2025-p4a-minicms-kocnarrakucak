@@ -2,11 +2,129 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+enum Status {
+  DRAFT
+  PUBLISHED
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+model PromptType {
+  id      String   @id @default(cuid())
+  name    String // e.g. "Text to text"
+  slug    String   @unique // e.g. "text-to-text"
+  prompts Prompt[]
+}
+
+model User {
+  id            String    @id @default(cuid())
+  role          Role      @default(USER)
+  username      String    @unique @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  prompts       Prompt[]
+  accounts      Account[]
+  sessions      Session[]
+}
+
+model AiModel {
+  id          String  @id @default(cuid())
+  name        String  @unique // Např. "GPT-4o"
+  provider    String // Např. "OpenAI", "Anthropic", "Midjourney"
+  description String?
+  websiteUrl  String?
+
+  evaluations ModelEvaluation[]
+}
+
+model Prompt {
+  id    String @id @default(cuid())
+  title String
+
+  // URL: /prompt/[promptType.slug]/[slug]
+  promptTypeId String
+  promptType   PromptType @relation(fields: [promptTypeId], references: [id], onDelete: Restrict)
+  slug         String
+
+  description  String?
+  systemPrompt String?
+  userPrompt   String
+
+  status Status @default(DRAFT)
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  publishDate DateTime?
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  tags        Tag[]
+  evaluations ModelEvaluation[]
+
+  @@index([promptTypeId, slug])
+  @@unique([userId, slug])
+}
+
+model ModelEvaluation {
+  id      String  @id @default(cuid())
+  rating  Int     @default(0) // 1-5 hvězdiček
+  comment String?
+
+  outputImageUrl String?
+  outputText     String?
+
+  promptId String
+  prompt   Prompt @relation(fields: [promptId], references: [id], onDelete: Cascade)
+
+  aiModelId String
+  aiModel   AiModel @relation(fields: [aiModelId], references: [id], onDelete: Cascade)
+
+  @@unique([promptId, aiModelId]) // Jeden prompt můžeš pro každý model hodnotit jen jednou
+}
+
+model Tag {
+  id      String   @id @default(cuid())
+  name    String   @unique // např. "seo", "marketing"
+  prompts Prompt[]
+}
+
+// --- NextAuth ---
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
