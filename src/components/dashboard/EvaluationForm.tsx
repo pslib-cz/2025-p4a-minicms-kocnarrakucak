@@ -4,10 +4,24 @@ import { useState } from "react";
 import { Button, Select, SelectItem, Textarea, Card, CardBody, CardHeader } from "@nextui-org/react";
 import { FaStar, FaTrash } from "react-icons/fa";
 
+type AiModel = {
+  id: string;
+  name: string;
+  provider: string;
+};
+
+type ExistingEvaluation = {
+  id: string;
+  aiModelId: string;
+  rating: number;
+  comment: string | null;
+  aiModel: AiModel;
+};
+
 type EvaluationFormProps = {
   promptId: string;
-  models: any[];
-  existingEvaluations: any[];
+  models: AiModel[];
+  existingEvaluations: ExistingEvaluation[];
 };
 
 export function EvaluationForm({ promptId, models, existingEvaluations }: EvaluationFormProps) {
@@ -19,7 +33,7 @@ export function EvaluationForm({ promptId, models, existingEvaluations }: Evalua
     comment: "",
   });
 
-  const availableModels = models.filter(m => !evaluations.some(e => e.aiModelId === m.id));
+  const availableModels = models.filter((m) => !evaluations.some((e) => e.aiModelId === m.id));
 
   const handleAdd = async () => {
     try {
@@ -30,7 +44,7 @@ export function EvaluationForm({ promptId, models, existingEvaluations }: Evalua
       });
 
       if (res.ok) {
-        const newEval = await res.json();
+        const newEval: ExistingEvaluation = await res.json();
         setEvaluations([...evaluations, newEval]);
         setIsAdding(false);
         setFormData({ aiModelId: "", rating: 3, comment: "" });
@@ -50,7 +64,7 @@ export function EvaluationForm({ promptId, models, existingEvaluations }: Evalua
         method: "DELETE",
       });
       if (res.ok) {
-        setEvaluations(evaluations.filter(e => e.id !== evalId));
+        setEvaluations(evaluations.filter((e) => e.id !== evalId));
       }
     } catch (e) {
       console.error(e);
@@ -69,7 +83,7 @@ export function EvaluationForm({ promptId, models, existingEvaluations }: Evalua
               variant="flat"
               size="sm"
               className="absolute -top-3 -right-3 z-10 rounded-full"
-              onClick={() => handleDelete(ev.id)}
+              onPress={() => handleDelete(ev.id)}
             >
               <FaTrash size={12} />
             </Button>
@@ -85,26 +99,14 @@ export function EvaluationForm({ promptId, models, existingEvaluations }: Evalua
               </div>
             </CardHeader>
             <CardBody className="px-4 py-4 space-y-4">
-              {ev.comment && <p className="text-sm italic text-zinc-600 dark:text-zinc-400">"{ev.comment}"</p>}
-              
-              {ev.outputText && (
-                <div className="bg-zinc-50 dark:bg-zinc-900 p-3 rounded-xl border border-zinc-100 dark:border-zinc-800 text-sm whitespace-pre-wrap font-mono max-h-48 overflow-y-auto">
-                  {ev.outputText}
-                </div>
-              )}
-              
-              {ev.outputImageUrl && (
-                <div className="rounded-xl overflow-hidden border border-zinc-200 dark:border-zinc-800">
-                  <img src={ev.outputImageUrl} alt="Model output" className="w-full h-auto object-cover" />
-                </div>
-              )}
+              {ev.comment && <p className="text-sm italic text-zinc-600 dark:text-zinc-400">{ev.comment}</p>}
             </CardBody>
           </Card>
         ))}
       </div>
 
       {!isAdding && availableModels.length > 0 && (
-        <Button variant="flat" color="primary" onClick={() => setIsAdding(true)}>
+        <Button variant="flat" color="primary" onPress={() => setIsAdding(true)}>
           Add Model Evaluation
         </Button>
       )}
@@ -114,15 +116,17 @@ export function EvaluationForm({ promptId, models, existingEvaluations }: Evalua
           <CardBody className="space-y-4 p-6">
             <div className="flex justify-between items-center mb-2">
               <h3 className="text-lg font-bold text-blue-600 dark:text-blue-400">New Evaluation</h3>
-              <Button size="sm" variant="light" onClick={() => setIsAdding(false)}>Cancel</Button>
+              <Button size="sm" variant="light" onPress={() => setIsAdding(false)}>
+                Cancel
+              </Button>
             </div>
             
             <Select 
               label="Select AI Model" 
               selectedKeys={[formData.aiModelId]}
-              onChange={(e) => setFormData({...formData, aiModelId: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, aiModelId: e.target.value })}
             >
-              {availableModels.map(m => <SelectItem key={m.id} value={m.id}>{m.name}</SelectItem>)}
+              {availableModels.map((m) => <SelectItem key={m.id} value={m.id}>{m.name}</SelectItem>)}
             </Select>
             
             <div>
@@ -132,8 +136,8 @@ export function EvaluationForm({ promptId, models, existingEvaluations }: Evalua
                   <button
                     key={val}
                     type="button"
-                    onClick={() => setFormData({...formData, rating: val})}
-                    className={`text-2xl transition-colors ${val <= formData.rating ? 'text-yellow-500' : 'text-zinc-300 dark:text-zinc-700 hover:text-yellow-200'}`}
+                    onClick={() => setFormData({ ...formData, rating: val })}
+                    className={`text-2xl transition-colors ${val <= formData.rating ? "text-yellow-500" : "text-zinc-300 dark:text-zinc-700 hover:text-yellow-200"}`}
                   >
                     <FaStar />
                   </button>
@@ -145,11 +149,11 @@ export function EvaluationForm({ promptId, models, existingEvaluations }: Evalua
               label="Comment / Thoughts"
               placeholder="How well did this model handle the prompt?"
               value={formData.comment}
-              onValueChange={(val) => setFormData({...formData, comment: val})}
+              onValueChange={(val) => setFormData({ ...formData, comment: val })}
             />
 
             <div className="flex justify-end pt-2">
-              <Button color="primary" onClick={handleAdd} isDisabled={!formData.aiModelId}>
+              <Button color="primary" onPress={handleAdd} isDisabled={!formData.aiModelId}>
                 Save Evaluation
               </Button>
             </div>

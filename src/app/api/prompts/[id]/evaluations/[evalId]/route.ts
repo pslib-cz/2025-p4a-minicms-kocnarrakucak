@@ -31,8 +31,6 @@ export async function PUT(
       data: {
         rating: result.data.rating,
         comment: result.data.comment,
-        outputImageUrl: result.data.outputImageUrl,
-        outputText: result.data.outputText,
         aiModelId: result.data.aiModelId,
       },
       include: {
@@ -41,13 +39,13 @@ export async function PUT(
     });
 
     return NextResponse.json(evaluation);
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Failed to update evaluation" }, { status: 500 });
   }
 }
 
 export async function DELETE(
-  req: NextRequest,
+  _req: NextRequest,
   { params }: { params: Promise<{ id: string; evalId: string }> }
 ) {
   try {
@@ -67,7 +65,7 @@ export async function DELETE(
     });
 
     return NextResponse.json({ success: true });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Failed to delete evaluation" }, { status: 500 });
   }
 }

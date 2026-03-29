@@ -14,8 +14,7 @@ export async function POST(
     }
 
     const { id: promptId } = await params;
-    
-    // Check if prompt exists
+
     const prompt = await prisma.prompt.findUnique({ where: { id: promptId } });
     if (!prompt) return NextResponse.json({ error: "Prompt not found" }, { status: 404 });
 
@@ -26,7 +25,6 @@ export async function POST(
       return NextResponse.json({ error: "Invalid data", details: result.error.issues }, { status: 400 });
     }
 
-    // Check if evaluation already exists for this model by this user
     const existing = await prisma.modelEvaluation.findUnique({
       where: {
         userId_promptId_aiModelId: {
@@ -53,7 +51,7 @@ export async function POST(
     });
 
     return NextResponse.json(evalData, { status: 201 });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Failed to create evaluation" }, { status: 500 });
   }
 }

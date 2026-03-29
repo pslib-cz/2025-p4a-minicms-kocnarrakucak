@@ -162,7 +162,7 @@ export default async function PromptDetailPage({
                     </div>
                   </div>
                   <div className="p-6">
-                    {ev.comment && <p className="text-sm italic text-zinc-600 dark:text-zinc-400">"{ev.comment}"</p>}
+                    {ev.comment && <p className="text-sm italic text-zinc-600 dark:text-zinc-400">{ev.comment}</p>}
                   </div>
                 </article>
               ))}

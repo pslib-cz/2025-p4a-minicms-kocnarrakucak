@@ -93,7 +93,7 @@ export default function PromptTypesPage() {
           <p className="text-zinc-500 mt-1">Manage global Prompt Types used to categorize Prompts.</p>
         </div>
         {!isAdding && (
-          <Button color="primary" onClick={() => setIsAdding(true)} startContent={<FaPlus />}>
+          <Button color="primary" onPress={() => setIsAdding(true)} startContent={<FaPlus />}>
             Add Type
           </Button>
         )}
@@ -103,7 +103,15 @@ export default function PromptTypesPage() {
         <form onSubmit={handleAdd} className="bg-white dark:bg-zinc-900 p-6 rounded-xl border border-blue-200 dark:border-blue-900/30 space-y-4">
           <div className="flex justify-between items-center">
             <h3 className="text-lg font-bold">New Prompt Type</h3>
-            <Button size="sm" variant="light" onClick={() => { setIsAdding(false); setSlugManuallyEdited(false); setFormData({ name: "", slug: "" }); }}>
+            <Button
+              size="sm"
+              variant="light"
+              onPress={() => {
+                setIsAdding(false);
+                setSlugManuallyEdited(false);
+                setFormData({ name: "", slug: "" });
+              }}
+            >
               Cancel
             </Button>
           </div>

@@ -4,7 +4,7 @@ import { auth } from "@/lib/auth";
 import { promptSchema } from "@/lib/validations";
 
 export async function GET(
-  req: NextRequest,
+  _req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
@@ -34,7 +34,7 @@ export async function GET(
     }
 
     return NextResponse.json(prompt);
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Failed to fetch prompt" }, { status: 500 });
   }
 }
@@ -70,7 +70,6 @@ export async function PUT(
       where: { id },
       data: {
         ...promptData,
-        status: promptData.status as any,
         publishDate:
           promptData.status === "PUBLISHED" && prompt.status !== "PUBLISHED"
             ? new Date()
@@ -83,13 +82,13 @@ export async function PUT(
     });
 
     return NextResponse.json(updatedPrompt);
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Failed to update prompt" }, { status: 500 });
   }
 }
 
 export async function DELETE(
-  req: NextRequest,
+  _req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
@@ -107,7 +106,7 @@ export async function DELETE(
     await prisma.prompt.delete({ where: { id } });
 
     return NextResponse.json({ success: true });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Failed to delete prompt" }, { status: 500 });
   }
 }

@@ -9,7 +9,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { type, user, slug } = await params;
 
   const prompt = await prisma.prompt.findFirst({
-    where: { slug, user: { username: user } },
+    where: { slug, user: { username: user }, promptType: { slug: type } },
     include: { promptType: true, user: true },
   });
 

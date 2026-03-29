@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 export default function SettingsPage() {
   const { data: session, update } = useSession();
   const router = useRouter();
+  const currentUsername = session?.user?.username ?? "";
   
   const [username, setUsername] = useState("");
   const [error, setError] = useState("");
@@ -38,11 +39,11 @@ export default function SettingsPage() {
         throw new Error(data.error || "Failed to update username");
       }
 
-      await update();
+      await update({ user: { username } });
       setSuccess(true);
       router.refresh();
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to update username");
     } finally {
       setIsLoading(false);
     }
@@ -81,7 +82,7 @@ export default function SettingsPage() {
 
           <button
             type="submit"
-            disabled={isLoading || username === session?.user?.username || !username}
+            disabled={isLoading || username === currentUsername || !username}
             className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
           >
             {isLoading ? "Saving..." : "Save Changes"}

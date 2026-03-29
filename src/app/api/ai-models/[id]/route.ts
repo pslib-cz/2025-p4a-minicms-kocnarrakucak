@@ -32,13 +32,13 @@ export async function PUT(
     });
 
     return NextResponse.json(model);
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Failed to update model" }, { status: 500 });
   }
 }
 
 export async function DELETE(
-  req: NextRequest,
+  _req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
@@ -55,7 +55,7 @@ export async function DELETE(
     });
 
     return NextResponse.json({ success: true });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Failed to delete model" }, { status: 500 });
   }
 }

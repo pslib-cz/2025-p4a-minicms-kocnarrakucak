@@ -1,38 +1,29 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Input, Button, Snippet } from "@nextui-org/react";
-import ReactMarkdown from "react-markdown";
+import { useMemo, useState } from "react";
+import { Input, Snippet } from "@nextui-org/react";
 
 export function VariableInjector({ rawPrompt }: { rawPrompt: string }) {
-  const [variables, setVariables] = useState<string[]>([]);
   const [values, setValues] = useState<Record<string, string>>({});
-  const [injectedPrompt, setInjectedPrompt] = useState(rawPrompt);
 
-  useEffect(() => {
-    // Extract variables
+  const variables = useMemo(() => {
     const matches = Array.from(rawPrompt.matchAll(/\{\{\s*([a-zA-Z0-9_]+)\s*\}\}/g));
-    const vars = Array.from(new Set(matches.map(m => m[1])));
-    setVariables(vars);
-    
-    // Initialize empty values
-    const initVals: Record<string, string> = {};
-    vars.forEach(v => { initVals[v] = ""; });
-    setValues(initVals);
+    return Array.from(new Set(matches.map((match) => match[1])));
   }, [rawPrompt]);
 
-  useEffect(() => {
+  const injectedPrompt = useMemo(() => {
     let result = rawPrompt;
+
     Object.entries(values).forEach(([key, val]) => {
-      // Replace all instances of {{ key }} with the value (or keep it if empty)
       const regex = new RegExp(`\\{\\{\\s*${key}\\s*\\}\\}`, "g");
       result = result.replace(regex, val || `{{ ${key} }}`);
     });
-    setInjectedPrompt(result);
+
+    return result;
   }, [values, rawPrompt]);
 
   const handleChange = (key: string, val: string) => {
-    setValues(prev => ({ ...prev, [key]: val }));
+    setValues((prev) => ({ ...prev, [key]: val }));
   };
 
   return (
@@ -42,13 +33,13 @@ export function VariableInjector({ rawPrompt }: { rawPrompt: string }) {
         <div className="lg:col-span-4 bg-white dark:bg-zinc-900 border border-blue-200 dark:border-blue-900/30 rounded-3xl p-6 shadow-sm h-fit sticky top-24">
           <h3 className="text-xl font-bold mb-6 text-blue-600 dark:text-blue-400">Configure Prompt</h3>
           <div className="space-y-4">
-            {variables.map(v => (
+            {variables.map((variable) => (
               <Input
-                key={v}
-                label={v}
-                placeholder={`Enter value for ${v}`}
-                value={values[v] || ""}
-                onValueChange={(val) => handleChange(v, val)}
+                key={variable}
+                label={variable}
+                placeholder={`Enter value for ${variable}`}
+                value={values[variable] || ""}
+                onValueChange={(val) => handleChange(variable, val)}
                 variant="bordered"
               />
             ))}
@@ -60,7 +51,7 @@ export function VariableInjector({ rawPrompt }: { rawPrompt: string }) {
       )}
 
       {/* Main Prompt Viewer */}
-      <div className={`space-y-4 ${variables.length > 0 ? 'lg:col-span-8' : 'lg:col-span-12'}`}>
+      <div className={`space-y-4 ${variables.length > 0 ? "lg:col-span-8" : "lg:col-span-12"}`}>
         <div className="flex justify-between items-center mb-2">
           <h2 className="text-2xl font-bold">Prompt Template</h2>
           <Snippet 

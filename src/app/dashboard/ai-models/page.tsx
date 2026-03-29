@@ -80,7 +80,7 @@ export default function AiModelsPage() {
           <p className="text-zinc-500 mt-1">Manage global AI Models used for evaluating Prompts.</p>
         </div>
         {!isAdding && (
-          <Button color="primary" onClick={() => setIsAdding(true)} startContent={<FaPlus />}>
+          <Button color="primary" onPress={() => setIsAdding(true)} startContent={<FaPlus />}>
             Add Model
           </Button>
         )}
@@ -90,7 +90,9 @@ export default function AiModelsPage() {
         <form onSubmit={handleAdd} className="bg-white dark:bg-zinc-900 p-6 rounded-xl border border-blue-200 dark:border-blue-900/30 space-y-4">
           <div className="flex justify-between items-center">
             <h3 className="text-lg font-bold">New AI Model</h3>
-            <Button size="sm" variant="light" onClick={() => setIsAdding(false)}>Cancel</Button>
+            <Button size="sm" variant="light" onPress={() => setIsAdding(false)}>
+              Cancel
+            </Button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <Input isRequired label="Model Name" placeholder="e.g. GPT-4o" value={formData.name} onValueChange={(v) => setFormData({...formData, name: v})} />

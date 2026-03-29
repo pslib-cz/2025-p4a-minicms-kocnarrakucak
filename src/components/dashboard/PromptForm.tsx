@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Input, Textarea, Button, Select, SelectItem, Switch, Chip } from "@nextui-org/react";
 import slugify from "slugify";
@@ -10,17 +10,39 @@ import "@uiw/react-markdown-preview/markdown.css";
 
 const MDEditor = dynamic(() => import("@uiw/react-md-editor"), { ssr: false });
 
-type PromptFormProps = {
-  initialData?: any;
+type PromptFormInitialData = {
+  id: string;
+  title: string;
+  slug: string;
+  promptTypeId: string;
+  description: string | null;
+  systemPrompt: string | null;
+  userPrompt: string;
+  status: "DRAFT" | "PUBLISHED";
   tags: { id: string; name: string }[];
-  models: { id: string; name: string }[];
+};
+
+type PromptFormData = {
+  title: string;
+  slug: string;
+  promptTypeId: string;
+  description: string;
+  systemPrompt: string;
+  userPrompt: string;
+  status: "DRAFT" | "PUBLISHED";
+  tags: string[];
+};
+
+type PromptFormProps = {
+  initialData?: PromptFormInitialData;
+  tags: { id: string; name: string }[];
   promptTypes: { id: string; name: string }[];
 };
 
-export function PromptForm({ initialData, tags, models, promptTypes }: PromptFormProps) {
+export function PromptForm({ initialData, tags, promptTypes }: PromptFormProps) {
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<PromptFormData>({
     title: initialData?.title || "",
     slug: initialData?.slug || "",
     promptTypeId: initialData?.promptTypeId || (promptTypes.length > 0 ? promptTypes[0].id : ""),
@@ -28,17 +50,13 @@ export function PromptForm({ initialData, tags, models, promptTypes }: PromptFor
     systemPrompt: initialData?.systemPrompt || "",
     userPrompt: initialData?.userPrompt || "",
     status: initialData?.status || "DRAFT",
-    tags: initialData?.tags?.map((t: any) => t.id) || [],
+    tags: initialData?.tags?.map((tag) => tag.id) || [],
   });
-  
-  const [variables, setVariables] = useState<string[]>([]);
 
-  // Extract variables like {{ keyword }}
-  useEffect(() => {
+  const variables = useMemo(() => {
     const text = formData.userPrompt || "";
     const matches = Array.from(text.matchAll(/\{\{\s*([a-zA-Z0-9_]+)\s*\}\}/g)) as RegExpMatchArray[];
-    const vars = Array.from(new Set(matches.map(m => m[1])));
-    setVariables(vars);
+    return Array.from(new Set(matches.map((match) => match[1])));
   }, [formData.userPrompt]);
 
   const handleTitleChange = (val: string) => {
@@ -55,8 +73,9 @@ export function PromptForm({ initialData, tags, models, promptTypes }: PromptFor
     setIsSubmitting(true);
     
     try {
-      const isEdit = !!initialData;
-      const url = isEdit ? `/api/prompts/${initialData.id}` : "/api/prompts";
+      const promptId = initialData?.id;
+      const isEdit = typeof promptId === "string";
+      const url = isEdit ? `/api/prompts/${promptId}` : "/api/prompts";
       const method = isEdit ? "PUT" : "POST";
       
       const res = await fetch(url, {
@@ -85,16 +104,20 @@ export function PromptForm({ initialData, tags, models, promptTypes }: PromptFor
     <form onSubmit={handleSubmit} className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
       <div className="flex justify-between items-center bg-zinc-50 dark:bg-zinc-900 p-4 rounded-xl border border-zinc-200 dark:border-zinc-800">
         <div className="flex items-center gap-4">
-          <Switch 
-            isSelected={formData.status === "PUBLISHED"} 
-            onValueChange={(val) => setFormData({...formData, status: val ? "PUBLISHED" : "DRAFT"})} 
+          <Switch
+            isSelected={formData.status === "PUBLISHED"}
+            onValueChange={(val) =>
+              setFormData({ ...formData, status: val ? "PUBLISHED" : "DRAFT" })
+            }
             color="success"
           >
             {formData.status === "PUBLISHED" ? "Published" : "Draft"}
           </Switch>
         </div>
         <div className="flex gap-3">
-          <Button variant="flat" onClick={() => router.back()}>Cancel</Button>
+          <Button variant="flat" onPress={() => router.back()}>
+            Cancel
+          </Button>
           <Button color="primary" type="submit" isLoading={isSubmitting}>
             {initialData ? "Save Changes" : "Create Prompt"}
           </Button>
@@ -145,8 +168,10 @@ export function PromptForm({ initialData, tags, models, promptTypes }: PromptFor
               <div className="flex justify-between items-end mb-2">
                 <p className="text-sm font-medium">User Prompt (Main Template)</p>
                 <div className="flex gap-1">
-                  {variables.map(v => (
-                    <Chip key={v} size="sm" color="secondary" variant="flat">{`{{ ${v} }}`}</Chip>
+                  {variables.map((variable) => (
+                    <Chip key={variable} size="sm" color="secondary" variant="flat">
+                      {`{{ ${variable} }}`}
+                    </Chip>
                   ))}
                 </div>
               </div>

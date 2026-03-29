@@ -9,7 +9,7 @@ export async function GET() {
       orderBy: { name: "asc" },
     });
     return NextResponse.json(tags);
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Failed to fetch tags" }, { status: 500 });
   }
 }
@@ -44,7 +44,7 @@ export async function POST(req: NextRequest) {
     });
 
     return NextResponse.json(tag, { status: 201 });
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Failed to create tag" }, { status: 500 });
   }
 }

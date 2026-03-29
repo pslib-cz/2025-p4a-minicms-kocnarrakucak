@@ -41,7 +41,7 @@ export default async function EditPromptPage({
           <p className="text-zinc-500 mt-1">Update your prompt content and settings.</p>
         </div>
 
-        <PromptForm initialData={prompt} tags={tags} models={models} promptTypes={promptTypes} />
+        <PromptForm initialData={prompt} tags={tags} promptTypes={promptTypes} />
       </div>
 
       {/* Evaluations Section */}

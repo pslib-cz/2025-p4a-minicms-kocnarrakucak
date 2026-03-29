@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { promptSchema } from "@/lib/validations";
@@ -15,10 +16,16 @@ export async function GET(req: NextRequest) {
     const promptTypeId = url.searchParams.get("promptTypeId");
     const status = url.searchParams.get("status");
 
-    const where: any = { userId: session.user.id };
-    if (search) where.title = { contains: search };
+    const where: Prisma.PromptWhereInput = { userId: session.user.id };
+
+    if (search) {
+      where.title = { contains: search, mode: "insensitive" };
+    }
+
     if (promptTypeId) where.promptTypeId = promptTypeId;
-    if (status) where.status = status;
+    if (status === "DRAFT" || status === "PUBLISHED") {
+      where.status = status;
+    }
 
     const prompts = await prisma.prompt.findMany({
       where,
@@ -31,7 +38,7 @@ export async function GET(req: NextRequest) {
     });
 
     return NextResponse.json(prompts);
-  } catch (error) {
+  } catch {
     return NextResponse.json({ error: "Failed to fetch prompts" }, { status: 500 });
   }
 }
@@ -69,7 +76,6 @@ export async function POST(req: NextRequest) {
     const newPrompt = await prisma.prompt.create({
       data: {
         ...promptData,
-        status: promptData.status as any,
         userId: session.user.id,
         publishDate: promptData.status === "PUBLISHED" ? new Date() : null,
         tags: {

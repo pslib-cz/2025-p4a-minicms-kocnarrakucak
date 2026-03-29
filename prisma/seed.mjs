@@ -1,11 +1,10 @@
-const { PrismaClient } = require("@prisma/client");
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
 async function main() {
   console.log("Seeding database...");
 
-  // 1. Create a demo user
   const user = await prisma.user.upsert({
     where: { email: "demo@example.com" },
     update: {},
@@ -16,19 +15,19 @@ async function main() {
     },
   });
 
-  // 2. Create Tags
   const tagsData = ["SEO", "Marketing", "Programming", "Design", "Writing"];
   const tags = [];
-  for (const t of tagsData) {
+
+  for (const tagName of tagsData) {
     const tag = await prisma.tag.upsert({
-      where: { name: t },
+      where: { name: tagName },
       update: {},
-      create: { name: t },
+      create: { name: tagName },
     });
+
     tags.push(tag);
   }
 
-  // 3. Create AI Models
   const modelsData = [
     { name: "GPT-4o", provider: "OpenAI", description: "Flagship model" },
     { name: "Claude 3.5 Sonnet", provider: "Anthropic", description: "Great for coding" },
@@ -36,16 +35,17 @@ async function main() {
   ];
 
   const aiModels = [];
-  for (const m of modelsData) {
+
+  for (const modelData of modelsData) {
     const model = await prisma.aiModel.upsert({
-      where: { name: m.name },
+      where: { name: modelData.name },
       update: {},
-      create: m,
+      create: modelData,
     });
+
     aiModels.push(model);
   }
 
-  // 3.5 Create Prompt Types
   const promptTypesData = [
     { name: "Text to text", slug: "text-to-text" },
     { name: "Text to image", slug: "text-to-image" },
@@ -56,18 +56,19 @@ async function main() {
   ];
 
   const promptTypes = {};
-  for (const pt of promptTypesData) {
+
+  for (const promptType of promptTypesData) {
     const createdType = await prisma.promptType.upsert({
-      where: { slug: pt.slug },
+      where: { slug: promptType.slug },
       update: {},
-      create: pt,
+      create: promptType,
     });
-    promptTypes[pt.slug] = createdType;
+
+    promptTypes[promptType.slug] = createdType;
   }
 
   const textPromptType = promptTypes["text-to-text"];
 
-  // 4. Create Prompts
   const prompt1 = await prisma.prompt.upsert({
     where: { userId_slug: { userId: user.id, slug: "react-component-generator" } },
     update: {},
@@ -82,12 +83,12 @@ async function main() {
       publishDate: new Date(),
       userId: user.id,
       tags: {
-        connect: [{ id: tags[2].id }], // Programming
+        connect: [{ id: tags[2].id }],
       },
     },
   });
 
-  const prompt2 = await prisma.prompt.upsert({
+  await prisma.prompt.upsert({
     where: { userId_slug: { userId: user.id, slug: "blog-post-outline" } },
     update: {},
     create: {
@@ -96,23 +97,23 @@ async function main() {
       slug: "blog-post-outline",
       description: "Creates an SEO-optimized outline for a blog post.",
       systemPrompt: "You are an SEO expert and content marketer.",
-      userPrompt: "Create an outline for a blog post about {{ topic }} targeting the keyword '{{ keyword }}'. Include H2 and H3 headings.",
+      userPrompt:
+        "Create an outline for a blog post about {{ topic }} targeting the keyword '{{ keyword }}'. Include H2 and H3 headings.",
       status: "PUBLISHED",
       publishDate: new Date(),
       userId: user.id,
       tags: {
-        connect: [{ id: tags[0].id }, { id: tags[1].id }], // SEO, Marketing
+        connect: [{ id: tags[0].id }, { id: tags[1].id }],
       },
     },
   });
 
-  // 5. Create Evaluations
   await prisma.modelEvaluation.upsert({
     where: {
       userId_promptId_aiModelId: {
         userId: user.id,
         promptId: prompt1.id,
-        aiModelId: aiModels[1].id, // Claude
+        aiModelId: aiModels[1].id,
       },
     },
     update: {},
@@ -129,8 +130,8 @@ async function main() {
 }
 
 main()
-  .catch((e) => {
-    console.error(e);
+  .catch((error) => {
+    console.error(error);
     process.exit(1);
   })
   .finally(async () => {
