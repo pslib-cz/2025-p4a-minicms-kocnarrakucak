@@ -42,7 +42,7 @@ export default async function DashboardHome() {
         action={
           <Link
             href="/dashboard/prompts/new"
-            className="inline-flex items-center gap-2 rounded-full border border-white/8 bg-[#0f0f0e] px-5 py-3 text-[13px] text-foreground shadow-[0_18px_35px_rgba(0,0,0,0.2)] transition hover:bg-[#181816]"
+            className="inline-flex items-center gap-2 rounded-full border border-border bg-surface-strong px-5 py-3 text-[13px] text-foreground shadow-[0_18px_35px_rgba(0,0,0,0.16)] transition hover:bg-panel"
           >
             <FaPlus size={12} />
             <span>Create prompt</span>
@@ -64,7 +64,7 @@ export default async function DashboardHome() {
             </div>
 
             <div className="flex flex-wrap gap-3 text-[13px] text-muted">
-              <span className="rounded-full border border-border bg-[#0f0f0e] px-4 py-2 text-foreground">
+              <span className="rounded-full border border-border bg-surface-strong px-4 py-2 text-foreground">
                 Total prompts: {promptsCount}
               </span>
               <span className="rounded-full border border-border px-4 py-2">
@@ -76,7 +76,7 @@ export default async function DashboardHome() {
             </div>
           </div>
 
-          <div className="rounded-[26px] border border-border/80 bg-[#0f0f0e] p-5">
+          <div className="rounded-[26px] border border-border/80 bg-surface-strong p-5">
             <p className="text-[12px] uppercase tracking-[0.18em] text-muted">Next up</p>
             <div className="mt-4 space-y-4 text-[14px] leading-[1.7] text-muted">
               <p>Keep prompt metadata clean so public routes, SEO and filtering stay consistent.</p>
@@ -102,7 +102,7 @@ export default async function DashboardHome() {
           action={
             <Link
               href="/dashboard/prompts"
-              className="inline-flex items-center gap-2 rounded-full border border-border bg-[#0f0f0e] px-4 py-2 text-[12px] text-foreground transition hover:bg-[#181816]"
+              className="inline-flex items-center gap-2 rounded-full border border-border bg-surface-strong px-4 py-2 text-[12px] text-foreground transition hover:bg-panel"
             >
               <span>View prompts</span>
               <FaArrowRight size={10} />

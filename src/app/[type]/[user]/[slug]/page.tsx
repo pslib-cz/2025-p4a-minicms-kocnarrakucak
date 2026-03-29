@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import { VariableInjector } from "@/components/VariableInjector";
-import { FaTag, FaStar } from "react-icons/fa";
+import { FaArrowLeft, FaArrowRight, FaRegUser, FaStar, FaTag } from "react-icons/fa";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import { auth } from "@/lib/auth";
@@ -55,115 +55,192 @@ export default async function PromptDetailPage({
         ).toFixed(1)
       : null;
 
+  const panelClassName =
+    "rounded-[32px] border border-border/80 bg-surface/90 p-6 shadow-[0_24px_60px_rgba(0,0,0,0.16)] backdrop-blur-sm md:p-8";
+
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-black text-zinc-900 dark:text-zinc-50 font-sans pb-24">
-      {/* Header */}
-      <header className="sticky top-0 z-50 bg-white/80 dark:bg-black/80 backdrop-blur-md border-b border-zinc-200 dark:border-zinc-800">
-        <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
-          <Link href="/" className="text-xl font-bold bg-gradient-to-r from-blue-500 to-purple-600 bg-clip-text text-transparent">
-            &larr; Back to Explorer
+    <div className="relative isolate min-h-screen overflow-hidden bg-background pb-24 text-foreground">
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(circle at 14% 10%, rgba(255,255,255,0.08), transparent 18%), radial-gradient(circle at 84% 10%, rgba(255,255,255,0.05), transparent 14%), linear-gradient(180deg, var(--background) 0%, color-mix(in srgb, var(--surface) 94%, transparent) 18%, color-mix(in srgb, var(--surface-strong) 90%, transparent) 40%, color-mix(in srgb, var(--panel) 68%, var(--background) 32%) 66%, color-mix(in srgb, var(--surface) 82%, var(--background) 18%) 100%)",
+        }}
+      />
+      <div
+        className="pointer-events-none absolute inset-x-0 top-[18rem] h-[28rem] blur-3xl"
+        style={{
+          background:
+            "linear-gradient(135deg, color-mix(in srgb, var(--panel) 10%, transparent) 0%, color-mix(in srgb, var(--panel-strong) 40%, transparent) 48%, color-mix(in srgb, var(--panel-strong) 42%, transparent) 100%)",
+        }}
+      />
+
+      <header className="relative z-20 border-b border-white/5 bg-background/70 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-[1500px] items-center justify-between gap-4 px-5 py-4 md:px-8 xl:px-14">
+          <Link
+            href="/"
+            className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-4 py-2 text-[13px] text-foreground transition hover:bg-surface-strong"
+          >
+            <FaArrowLeft size={11} />
+            <span>Back to explorer</span>
           </Link>
+
+          {isAuthor && (
+            <Link
+              href={`/dashboard/prompts/${prompt.id}/edit`}
+              className="inline-flex items-center gap-2 rounded-full border border-border bg-surface-strong px-4 py-2 text-[13px] text-foreground shadow-[0_18px_35px_rgba(0,0,0,0.16)] transition hover:bg-panel"
+            >
+              <span>Edit prompt</span>
+              <FaArrowRight size={11} />
+            </Link>
+          )}
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-6 pt-12 space-y-12">
-        {/* Core Info */}
-        <section className="space-y-6">
-          <div className="flex items-center space-x-4">
-            <span className="text-sm font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20 px-4 py-1.5 rounded-full">
-              {prompt.promptType.name}
-            </span>
-            {avgRating ? (
-              <div className="flex items-center space-x-2 text-yellow-600 dark:text-yellow-500 font-medium">
-                <FaStar />
-                <span>{avgRating}</span>
-                <span className="text-zinc-400 text-sm">({prompt.evaluations.length} reviews)</span>
-              </div>
-            ) : (
-              <span className="text-zinc-400 text-sm">No ratings yet</span>
-            )}
+      <main className="relative z-10 mx-auto max-w-[1500px] space-y-12 px-5 pt-10 md:px-8 xl:px-14 xl:pt-14">
+        <section className="grid gap-6 xl:grid-cols-[minmax(0,1.35fr)_minmax(18rem,0.75fr)]">
+          <div className="space-y-6">
+            <div className="flex flex-wrap items-center gap-3 text-[13px] text-muted">
+              <span className="rounded-full border border-border bg-surface-strong px-4 py-2 text-foreground">
+                {prompt.promptType.name}
+              </span>
+              <span className="rounded-full border border-border px-4 py-2">
+                {avgRating ? `${avgRating} / 5` : "Unrated"}
+              </span>
+              <span className="rounded-full border border-border px-4 py-2">
+                {prompt.evaluations.length} reviews
+              </span>
+            </div>
+
+            <div className="space-y-4">
+              <h1 className="max-w-[16ch] text-[40px] font-semibold leading-[0.94] tracking-[-0.06em] text-foreground md:text-[56px] xl:text-[64px]">
+                {prompt.title}
+              </h1>
+              <p className="max-w-[58rem] text-[18px] leading-[1.7] text-muted md:text-[20px]">
+                {prompt.description || "No description provided."}
+              </p>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-3 border-t border-border/80 pt-5 text-[13px] text-muted">
+              <span className="inline-flex items-center gap-2 rounded-full border border-border bg-surface px-4 py-2">
+                <FaRegUser size={11} />
+                <span>{prompt.user.name || prompt.user.username}</span>
+              </span>
+              {prompt.tags.map((tagItem) => (
+                <span
+                  key={tagItem.id}
+                  className="inline-flex items-center gap-2 rounded-full border border-border px-4 py-2"
+                >
+                  <FaTag size={10} />
+                  <span>{tagItem.name}</span>
+                </span>
+              ))}
+            </div>
           </div>
 
-          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight">
-            {prompt.title}
-          </h1>
-
-          <p className="text-lg text-zinc-600 dark:text-zinc-400 leading-relaxed max-w-2xl">
-            {prompt.description || "No description provided."}
-          </p>
-
-          <div className="flex flex-wrap items-center gap-2 pt-4 border-t border-zinc-200 dark:border-zinc-800">
-            <div className="flex items-center space-x-2 mr-4">
-              <span className="text-sm font-medium">By {prompt.user?.username || prompt.user?.name || "Anonymous"}</span>
+          <div className={panelClassName}>
+            <div className="space-y-4">
+              <p className="text-[12px] uppercase tracking-[0.18em] text-muted">Prompt Overview</p>
+              <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-1">
+                <div className="rounded-[24px] border border-border/80 bg-[rgba(255,255,255,0.02)] p-4">
+                  <p className="text-[12px] uppercase tracking-[0.16em] text-muted">Average rating</p>
+                  <p className="mt-3 flex items-center gap-2 text-[28px] font-medium text-foreground">
+                    <FaStar className="text-[18px] text-yellow-400" />
+                    <span>{avgRating || "New"}</span>
+                  </p>
+                </div>
+                <div className="rounded-[24px] border border-border/80 bg-[rgba(255,255,255,0.02)] p-4">
+                  <p className="text-[12px] uppercase tracking-[0.16em] text-muted">Route</p>
+                  <p className="mt-3 text-[14px] leading-[1.7] text-foreground">
+                    /{prompt.promptType.slug}/{prompt.user.username}/{prompt.slug}
+                  </p>
+                </div>
+              </div>
+              <p className="text-[13px] leading-[1.7] text-muted">
+                Fill the variables below to build a ready-to-copy prompt, then rate the result with the model you used.
+              </p>
             </div>
-            {prompt.tags.map((t) => (
-              <span key={t.id} className="flex items-center space-x-1 text-xs px-3 py-1 bg-zinc-100 dark:bg-zinc-800 rounded-full text-zinc-600 dark:text-zinc-400">
-                <FaTag size={10} />
-                <span>{t.name}</span>
-              </span>
-            ))}
           </div>
         </section>
 
-        {/* System Prompt (if exists) */}
         {prompt.systemPrompt && (
-          <section className="bg-white dark:bg-zinc-900 p-8 rounded-3xl border border-zinc-200 dark:border-zinc-800 shadow-sm space-y-4">
-            <h2 className="text-xl font-bold text-zinc-900 dark:text-zinc-100">System Context / Persona</h2>
-            <div className="prose dark:prose-invert max-w-none text-zinc-600 dark:text-zinc-400">
+          <section className={panelClassName}>
+            <div className="space-y-2">
+              <p className="text-[12px] uppercase tracking-[0.18em] text-muted">System Prompt</p>
+              <h2 className="text-[24px] font-medium text-foreground">Context and persona</h2>
+            </div>
+            <div className="mt-5 space-y-4 text-[14px] leading-[1.85] text-muted [&_h1]:text-[22px] [&_h1]:font-medium [&_h1]:text-foreground [&_h2]:text-[18px] [&_h2]:font-medium [&_h2]:text-foreground [&_p]:leading-[1.85]">
               <ReactMarkdown>{prompt.systemPrompt}</ReactMarkdown>
             </div>
           </section>
         )}
 
-        {/* Variable Injector (Client Island) */}
-        <section>
+        <section className="space-y-4">
+          <div className="space-y-2">
+            <p className="text-[12px] uppercase tracking-[0.18em] text-muted">Prompt Builder</p>
+            <h2 className="text-[24px] font-medium text-foreground">Inject variables and copy the final prompt</h2>
+          </div>
           <VariableInjector rawPrompt={prompt.userPrompt} />
         </section>
 
-        {/* Visitor Rating Form */}
         {!isAuthor && (
-          <section className="bg-white dark:bg-zinc-900 p-8 rounded-3xl border border-zinc-200 dark:border-zinc-800 shadow-sm space-y-6">
-            <div>
-              <h2 className="text-2xl font-bold">Rate this prompt</h2>
-              <p className="text-sm text-zinc-500 dark:text-zinc-400 mt-1">
+          <section className={panelClassName}>
+            <div className="space-y-2">
+              <p className="text-[12px] uppercase tracking-[0.18em] text-muted">Your Evaluation</p>
+              <h2 className="text-[24px] font-medium text-foreground">Rate this prompt</h2>
+              <p className="text-[14px] leading-[1.7] text-muted">
                 Share how well this prompt worked with an AI model you tried.
               </p>
             </div>
-            {isLoggedIn ? (
+
+            <div className="mt-6">
+              {isLoggedIn ? (
               <VisitorEvaluationForm
                 promptId={prompt.id}
                 models={allModels}
                 existingEvaluations={myEvaluations}
               />
             ) : (
-              <p className="text-sm text-zinc-500 dark:text-zinc-400">
-                <Link href="/api/auth/signin" className="text-blue-500 hover:underline font-medium">Sign in</Link> to rate this prompt.
+              <p className="text-[14px] text-muted">
+                <Link
+                  href="/api/auth/signin"
+                  className="text-foreground underline underline-offset-4"
+                >
+                  Sign in
+                </Link>{" "}
+                to rate this prompt.
               </p>
             )}
+            </div>
           </section>
         )}
 
-        {/* Evaluations & Showcase */}
         {prompt.evaluations.length > 0 && (
-          <section className="space-y-6 pt-12 border-t border-zinc-200 dark:border-zinc-800">
-            <h2 className="text-2xl font-bold">Model Showcases</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <section className="space-y-6">
+            <div className="space-y-2">
+              <p className="text-[12px] uppercase tracking-[0.18em] text-muted">Showcase</p>
+              <h2 className="text-[24px] font-medium text-foreground">Model showcases</h2>
+            </div>
+            <div className="grid gap-6 md:grid-cols-2">
               {prompt.evaluations.map((ev) => (
-                <article key={ev.id} className="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden shadow-sm">
-                  <div className="p-6 border-b border-zinc-100 dark:border-zinc-800 flex justify-between items-start bg-zinc-50 dark:bg-zinc-900/50">
-                    <div>
-                      <h3 className="font-bold text-lg">{ev.aiModel.name}</h3>
-                      <p className="text-xs text-zinc-500">{ev.aiModel.provider}</p>
+                <article key={ev.id} className={panelClassName}>
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="space-y-1">
+                      <h3 className="text-[20px] font-medium text-foreground">{ev.aiModel.name}</h3>
+                      <p className="text-[12px] uppercase tracking-[0.16em] text-muted">{ev.aiModel.provider}</p>
                     </div>
-                    <div className="flex text-yellow-500 text-sm">
+                    <div className="flex text-yellow-400 text-sm">
                       {[...Array(5)].map((_, i) => (
-                        <FaStar key={i} className={i < ev.rating ? "" : "text-zinc-300 dark:text-zinc-700"} />
+                        <FaStar key={i} className={i < ev.rating ? "" : "text-muted-soft"} />
                       ))}
                     </div>
                   </div>
-                  <div className="p-6">
-                    {ev.comment && <p className="text-sm italic text-zinc-600 dark:text-zinc-400">{ev.comment}</p>}
-                  </div>
+
+                  {ev.comment && (
+                    <div className="mt-5 rounded-[22px] border border-border/80 bg-[rgba(255,255,255,0.02)] px-5 py-4">
+                      <p className="text-[14px] leading-[1.8] text-muted">{ev.comment}</p>
+                    </div>
+                  )}
                 </article>
               ))}
             </div>

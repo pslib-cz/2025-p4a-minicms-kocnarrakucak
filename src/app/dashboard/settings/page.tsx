@@ -3,12 +3,16 @@
 import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { Button, Input } from "@nextui-org/react";
+import { FormField } from "@/components/FormField";
+import { DashboardPageHeader } from "@/components/dashboard/DashboardPageHeader";
+import { DashboardPanel } from "@/components/dashboard/DashboardPanel";
 
 export default function SettingsPage() {
   const { data: session, update } = useSession();
   const router = useRouter();
   const currentUsername = session?.user?.username ?? "";
-  
+
   const [username, setUsername] = useState("");
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
@@ -50,45 +54,75 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold">Settings</h1>
-      </div>
+    <div className="space-y-8">
+      <DashboardPageHeader
+        eyebrow="Account"
+        title="Settings"
+        description="Manage the public identity used across your prompt URLs and creator profile surfaces."
+      />
 
-      <div className="bg-white dark:bg-zinc-900 rounded-xl border border-zinc-200 dark:border-zinc-800 p-6">
-        <h2 className="text-xl font-semibold mb-4">Profile Settings</h2>
-        
-        <form onSubmit={handleSubmit} className="space-y-4 max-w-md">
-          <div>
-            <label htmlFor="username" className="block text-sm font-medium text-zinc-700 dark:text-zinc-300 mb-1">
-              Username
-            </label>
-            <input
-              id="username"
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="w-full px-4 py-2 bg-zinc-50 dark:bg-zinc-800 border-zinc-200 dark:border-zinc-700 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-              placeholder="Your username"
-              required
-            />
-            <p className="text-sm text-zinc-500 mt-1">
-              This will be used for your public profile URL.
+      <DashboardPanel className="space-y-6">
+        <div className="flex flex-wrap items-center gap-3 text-[13px] text-muted">
+          <span className="rounded-full border border-border bg-surface-strong px-4 py-2 text-foreground">
+            Current username: {currentUsername || "not set"}
+          </span>
+          <span className="rounded-full border border-border px-4 py-2">
+            Public route: /[type]/{currentUsername || "username"}/[slug]
+          </span>
+        </div>
+
+        <form onSubmit={handleSubmit} className="max-w-[34rem] space-y-5 rounded-[24px] border border-border/80 bg-[rgba(255,255,255,0.02)] p-5">
+          <div className="space-y-2">
+            <h2 className="text-[20px] font-medium text-foreground">Profile settings</h2>
+            <p className="text-[13px] leading-[1.7] text-muted">
+              This username is used in your public prompt URLs, so changes will affect links to your content.
             </p>
           </div>
 
-          {error && <p className="text-red-500 text-sm">{error}</p>}
-          {success && <p className="text-green-500 text-sm">Username updated successfully!</p>}
-
-          <button
-            type="submit"
-            disabled={isLoading || username === currentUsername || !username}
-            className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors font-medium"
+          <FormField
+            label="Username"
+            hint="Only letters, numbers, underscores and dashes are allowed."
           >
-            {isLoading ? "Saving..." : "Save Changes"}
-          </button>
+            <Input
+              id="username"
+              type="text"
+              aria-label="Username"
+              value={username}
+              onValueChange={setUsername}
+              placeholder="Your username"
+              isRequired
+              classNames={{
+                label: "text-muted",
+                description: "text-muted-soft",
+                inputWrapper:
+                  "min-h-12 rounded-[18px] border border-border bg-[rgba(255,255,255,0.03)] shadow-none",
+                input: "text-foreground",
+              }}
+            />
+          </FormField>
+
+          {error && (
+            <p className="rounded-[18px] border border-red-500/30 bg-red-500/10 px-4 py-3 text-[13px] text-red-300">
+              {error}
+            </p>
+          )}
+
+          {success && (
+            <p className="rounded-[18px] border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-[13px] text-emerald-200">
+              Username updated successfully.
+            </p>
+          )}
+
+          <Button
+            type="submit"
+            isLoading={isLoading}
+            isDisabled={isLoading || username === currentUsername || !username}
+            className="h-11 rounded-full border border-border bg-surface-strong px-5 text-[13px] text-foreground shadow-[0_18px_35px_rgba(0,0,0,0.16)] transition hover:bg-panel"
+          >
+            Save changes
+          </Button>
         </form>
-      </div>
+      </DashboardPanel>
     </div>
   );
 }

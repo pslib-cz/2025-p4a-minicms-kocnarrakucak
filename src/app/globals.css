@@ -64,3 +64,42 @@ body {
   background: color-mix(in srgb, var(--foreground) 20%, transparent);
   color: var(--foreground);
 }
+
+.dashboard-editor .w-md-editor,
+.dashboard-editor .w-md-editor-toolbar,
+.dashboard-editor .w-md-editor-content,
+.dashboard-editor .w-md-editor-text,
+.dashboard-editor .w-md-editor-text-pre,
+.dashboard-editor .w-md-editor-text-input,
+.dashboard-editor .w-md-editor-preview,
+.dashboard-editor .wmde-markdown {
+  background: color-mix(in srgb, var(--surface) 88%, black 12%) !important;
+  color: var(--foreground) !important;
+}
+
+.dashboard-editor .w-md-editor {
+  overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--border) 80%, transparent) !important;
+  border-radius: 22px !important;
+  box-shadow: none !important;
+}
+
+.dashboard-editor .w-md-editor-toolbar {
+  border-bottom: 1px solid color-mix(in srgb, var(--border) 80%, transparent) !important;
+}
+
+.dashboard-editor .w-md-editor-toolbar li > button {
+  color: var(--muted) !important;
+}
+
+.dashboard-editor .w-md-editor-toolbar li > button:hover,
+.dashboard-editor .w-md-editor-toolbar li > button:focus {
+  background: color-mix(in srgb, var(--foreground) 7%, transparent) !important;
+  color: var(--foreground) !important;
+}
+
+.dashboard-editor .wmde-markdown,
+.dashboard-editor .w-md-editor-text-input,
+.dashboard-editor .w-md-editor-text-pre > code {
+  font-family: var(--font-ibm-plex-mono), monospace !important;
+}

@@ -1,3 +1,5 @@
+import { DashboardPageHeader } from "@/components/dashboard/DashboardPageHeader";
+import { DashboardPanel } from "@/components/dashboard/DashboardPanel";
 import { PromptForm } from "@/components/dashboard/PromptForm";
 import { EvaluationForm } from "@/components/dashboard/EvaluationForm";
 import { prisma } from "@/lib/prisma";
@@ -34,29 +36,32 @@ export default async function EditPromptPage({
   }
 
   return (
-    <div className="space-y-12">
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Edit Prompt</h1>
-          <p className="text-zinc-500 mt-1">Update your prompt content and settings.</p>
-        </div>
+      <div className="space-y-12">
+      <div className="space-y-8">
+        <DashboardPageHeader
+          eyebrow="Composer"
+          title="Edit Prompt"
+          description="Update metadata, prompt body and publishing status without leaving the dashboard flow."
+        />
 
         <PromptForm initialData={prompt} tags={tags} promptTypes={promptTypes} />
       </div>
 
-      {/* Evaluations Section */}
-      <div className="pt-8 border-t border-zinc-200 dark:border-zinc-800 space-y-6">
-        <div>
-          <h2 className="text-2xl font-bold tracking-tight">Model Evaluations & Showcase</h2>
-          <p className="text-zinc-500 mt-1">Score how well this prompt works on different AI models and showcase the results.</p>
+      <DashboardPanel className="space-y-6">
+        <div className="space-y-2">
+          <p className="text-[12px] uppercase tracking-[0.18em] text-muted">Evaluations</p>
+          <h2 className="text-[24px] font-medium text-foreground">Model evaluations and showcase</h2>
+          <p className="text-[14px] leading-[1.7] text-muted">
+            Score how well this prompt works on different AI models and keep the comparison visible in one place.
+          </p>
         </div>
 
-        <EvaluationForm 
-          promptId={prompt.id} 
+        <EvaluationForm
+          promptId={prompt.id}
           existingEvaluations={prompt.evaluations}
-          models={models} 
+          models={models}
         />
-      </div>
+      </DashboardPanel>
     </div>
   );
 }

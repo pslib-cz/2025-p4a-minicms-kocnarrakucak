@@ -37,7 +37,7 @@ export function DashboardTopbar() {
               href={item.href}
               className={`whitespace-nowrap rounded-full border px-4 py-2 text-[13px] transition ${
                 isActive
-                  ? "border-transparent bg-[#0f0f0e] text-foreground shadow-[0_14px_28px_rgba(0,0,0,0.24)]"
+                  ? "border-border bg-surface-strong text-foreground shadow-[0_14px_28px_rgba(0,0,0,0.16)]"
                   : "border-border bg-surface text-muted hover:text-foreground"
               }`}
             >

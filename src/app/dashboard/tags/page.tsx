@@ -1,7 +1,21 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Button, Input, Spinner, Tooltip } from "@nextui-org/react";
+import {
+  Button,
+  Input,
+  Spinner,
+  Table,
+  TableBody,
+  TableCell,
+  TableColumn,
+  TableHeader,
+  TableRow,
+  Tooltip,
+} from "@nextui-org/react";
+import { FormField } from "@/components/FormField";
+import { DashboardPageHeader } from "@/components/dashboard/DashboardPageHeader";
+import { DashboardPanel } from "@/components/dashboard/DashboardPanel";
 import { FaTrash, FaPlus } from "react-icons/fa";
 
 type Tag = {
@@ -70,57 +84,97 @@ export default function TagsPage() {
   };
 
   return (
-    <div className="space-y-6 max-w-4xl mx-auto">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Tags</h1>
-          <p className="text-zinc-500 mt-1">Manage global tags for categorizing your prompts.</p>
+    <div className="space-y-8">
+      <DashboardPageHeader
+        eyebrow="Taxonomy"
+        title="Tags"
+        description="Manage the shared tag layer used by public filtering, prompt organization and editorial consistency."
+      />
+
+      <DashboardPanel className="space-y-5">
+        <div className="flex flex-wrap items-center gap-3 text-[13px] text-muted">
+          <span className="rounded-full border border-border bg-surface-strong px-4 py-2 text-foreground">
+            Total tags: {tags.length}
+          </span>
+          <span className="rounded-full border border-border px-4 py-2">
+            Shared across all prompts
+          </span>
         </div>
-      </div>
 
-      <form onSubmit={handleAdd} className="flex gap-3 items-end bg-white dark:bg-zinc-900 p-4 rounded-xl border border-zinc-200 dark:border-zinc-800">
-        <Input 
-          className="max-w-xs" 
-          label="New Tag Name" 
-          placeholder="e.g. SEO" 
-          value={newTag} 
-          onValueChange={setNewTag} 
-          isRequired 
-        />
-        <Button color="primary" type="submit" isLoading={isSubmitting} startContent={<FaPlus />}>
-          Add Tag
-        </Button>
-      </form>
-
-      <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 shadow-sm overflow-hidden p-2">
-        <Table aria-label="Tags table" shadow="none" classNames={{ wrapper: "bg-transparent shadow-none" }}>
-          <TableHeader>
-            <TableColumn>NAME</TableColumn>
-            <TableColumn align="end">ACTIONS</TableColumn>
-          </TableHeader>
-          <TableBody 
-            items={tags} 
-            isLoading={isLoading} 
-            loadingContent={<Spinner label="Loading..." />}
-            emptyContent={isLoading ? " " : "No tags found."}
+        <form onSubmit={handleAdd} className="grid gap-3 md:grid-cols-[minmax(0,20rem)_auto] md:items-end">
+          <FormField label="New tag name">
+            <Input
+              aria-label="New tag name"
+              placeholder="e.g. SEO"
+              value={newTag}
+              onValueChange={setNewTag}
+              isRequired
+              classNames={{
+                label: "text-muted",
+                inputWrapper:
+                  "min-h-12 rounded-[18px] border border-border bg-[rgba(255,255,255,0.03)] shadow-none",
+                input: "text-foreground",
+              }}
+            />
+          </FormField>
+          <Button
+            type="submit"
+            isLoading={isSubmitting}
+            startContent={<FaPlus />}
+            className="h-12 rounded-full border border-border bg-surface-strong px-5 text-[13px] text-foreground shadow-[0_18px_35px_rgba(0,0,0,0.16)] transition hover:bg-panel"
           >
-            {(item) => (
-              <TableRow key={item.id}>
-                <TableCell><span className="font-semibold">{item.name}</span></TableCell>
-                <TableCell>
-                  <div className="flex justify-end pr-2">
-                    <Tooltip color="danger" content="Delete tag">
-                      <span onClick={() => handleDelete(item.id)} className="text-lg text-danger cursor-pointer active:opacity-50">
-                        <FaTrash />
-                      </span>
-                    </Tooltip>
-                  </div>
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </div>
+            Add tag
+          </Button>
+        </form>
+      </DashboardPanel>
+
+      <DashboardPanel>
+        <div className="overflow-hidden rounded-[24px] border border-border/80 bg-[rgba(255,255,255,0.02)] p-2">
+          <Table
+            aria-label="Tags table"
+            shadow="none"
+            classNames={{
+              base: "bg-transparent",
+              wrapper: "bg-transparent p-0 shadow-none",
+              th: "border-b border-border/80 bg-transparent text-[11px] uppercase tracking-[0.18em] text-muted",
+              td: "border-b border-border/70 py-4",
+              tr: "data-[hover=true]:bg-white/0",
+            }}
+          >
+            <TableHeader>
+              <TableColumn>NAME</TableColumn>
+              <TableColumn align="end">ACTIONS</TableColumn>
+            </TableHeader>
+            <TableBody
+              items={tags}
+              isLoading={isLoading}
+              loadingContent={<Spinner label="Loading..." />}
+              emptyContent={isLoading ? " " : "No tags found."}
+            >
+              {(item) => (
+                <TableRow key={item.id}>
+                  <TableCell>
+                    <span className="text-[14px] text-foreground">{item.name}</span>
+                  </TableCell>
+                  <TableCell>
+                    <div className="flex justify-end pr-2">
+                      <Tooltip color="danger" content="Delete tag">
+                        <button
+                          type="button"
+                          onClick={() => handleDelete(item.id)}
+                          className="flex size-9 items-center justify-center rounded-full border border-border text-danger transition active:opacity-50"
+                        >
+                          <FaTrash />
+                        </button>
+                      </Tooltip>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      </DashboardPanel>
     </div>
   );
 }

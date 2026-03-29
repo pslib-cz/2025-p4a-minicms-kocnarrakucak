@@ -15,6 +15,8 @@ export async function GET(req: NextRequest) {
     const search = url.searchParams.get("search") || "";
     const promptTypeId = url.searchParams.get("promptTypeId");
     const status = url.searchParams.get("status");
+    const requestedPage = Number.parseInt(url.searchParams.get("page") || "1", 10);
+    const requestedPageSize = Number.parseInt(url.searchParams.get("pageSize") || "8", 10);
 
     const where: Prisma.PromptWhereInput = { userId: session.user.id };
 
@@ -27,17 +29,48 @@ export async function GET(req: NextRequest) {
       where.status = status;
     }
 
-    const prompts = await prisma.prompt.findMany({
-      where,
-      orderBy: { updatedAt: "desc" },
-      include: {
-        promptType: true,
-        tags: true,
-        user: { select: { username: true } },
+    const pageSize =
+      Number.isFinite(requestedPageSize) && requestedPageSize > 0
+        ? Math.min(requestedPageSize, 24)
+        : 8;
+    const total = await prisma.prompt.count({ where });
+    const pageCount = Math.max(1, Math.ceil(total / pageSize));
+    const page =
+      Number.isFinite(requestedPage) && requestedPage > 0
+        ? Math.min(requestedPage, pageCount)
+        : 1;
+
+    const [prompts, allCount, publishedCount, draftCount] = await Promise.all([
+      prisma.prompt.findMany({
+        where,
+        orderBy: { updatedAt: "desc" },
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+        include: {
+          promptType: true,
+          tags: true,
+          user: { select: { username: true } },
+        },
+      }),
+      prisma.prompt.count({ where: { userId: session.user.id } }),
+      prisma.prompt.count({ where: { userId: session.user.id, status: "PUBLISHED" } }),
+      prisma.prompt.count({ where: { userId: session.user.id, status: "DRAFT" } }),
+    ]);
+
+    return NextResponse.json({
+      items: prompts,
+      pagination: {
+        page,
+        pageSize,
+        total,
+        pageCount,
+      },
+      summary: {
+        all: allCount,
+        published: publishedCount,
+        draft: draftCount,
       },
     });
-
-    return NextResponse.json(prompts);
   } catch {
     return NextResponse.json({ error: "Failed to fetch prompts" }, { status: 500 });
   }

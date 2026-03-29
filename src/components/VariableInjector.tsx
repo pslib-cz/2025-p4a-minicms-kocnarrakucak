@@ -1,10 +1,14 @@
 "use client";
 
-import { useMemo, useState } from "react";
-import { Input, Snippet } from "@nextui-org/react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Input } from "@nextui-org/react";
+import { FormField } from "@/components/FormField";
+import { FaCheck, FaRegClone } from "react-icons/fa";
 
 export function VariableInjector({ rawPrompt }: { rawPrompt: string }) {
   const [values, setValues] = useState<Record<string, string>>({});
+  const [copyState, setCopyState] = useState<"idle" | "copied" | "error">("idle");
+  const resetTimerRef = useRef<number | null>(null);
 
   const variables = useMemo(() => {
     const matches = Array.from(rawPrompt.matchAll(/\{\{\s*([a-zA-Z0-9_]+)\s*\}\}/g));
@@ -26,46 +30,103 @@ export function VariableInjector({ rawPrompt }: { rawPrompt: string }) {
     setValues((prev) => ({ ...prev, [key]: val }));
   };
 
+  useEffect(() => {
+    return () => {
+      if (resetTimerRef.current) {
+        window.clearTimeout(resetTimerRef.current);
+      }
+    };
+  }, []);
+
+  const handleCopy = async () => {
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(injectedPrompt);
+      } else {
+        const textArea = document.createElement("textarea");
+        textArea.value = injectedPrompt;
+        textArea.setAttribute("readonly", "");
+        textArea.style.position = "absolute";
+        textArea.style.left = "-9999px";
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand("copy");
+        document.body.removeChild(textArea);
+      }
+
+      setCopyState("copied");
+    } catch {
+      setCopyState("error");
+    }
+
+    if (resetTimerRef.current) {
+      window.clearTimeout(resetTimerRef.current);
+    }
+
+    resetTimerRef.current = window.setTimeout(() => {
+      setCopyState("idle");
+    }, 1800);
+  };
+
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-      {/* Variables Input Panel */}
+    <div className="grid gap-6 xl:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)]">
       {variables.length > 0 && (
-        <div className="lg:col-span-4 bg-white dark:bg-zinc-900 border border-blue-200 dark:border-blue-900/30 rounded-3xl p-6 shadow-sm h-fit sticky top-24">
-          <h3 className="text-xl font-bold mb-6 text-blue-600 dark:text-blue-400">Configure Prompt</h3>
+        <div className="rounded-[28px] border border-border/80 bg-surface/90 p-5 shadow-[0_20px_50px_rgba(0,0,0,0.14)] backdrop-blur-sm xl:sticky xl:top-6 xl:self-start">
+          <div className="space-y-2">
+            <p className="text-[12px] uppercase tracking-[0.18em] text-muted">Variables</p>
+            <h3 className="text-[24px] font-medium text-foreground">Configure prompt</h3>
+          </div>
           <div className="space-y-4">
             {variables.map((variable) => (
-              <Input
-                key={variable}
-                label={variable}
-                placeholder={`Enter value for ${variable}`}
-                value={values[variable] || ""}
-                onValueChange={(val) => handleChange(variable, val)}
-                variant="bordered"
-              />
+              <FormField key={variable} label={variable}>
+                <Input
+                  aria-label={variable}
+                  placeholder={`Enter value for ${variable}`}
+                  value={values[variable] || ""}
+                  onValueChange={(val) => handleChange(variable, val)}
+                  variant="bordered"
+                  classNames={{
+                    label: "text-muted",
+                    inputWrapper:
+                      "min-h-12 rounded-[18px] border border-border bg-[rgba(255,255,255,0.03)] shadow-none group-data-[focus=true]:border-foreground/30",
+                    input: "text-foreground",
+                  }}
+                />
+              </FormField>
             ))}
           </div>
-          <p className="text-xs text-zinc-500 mt-6 mt-auto">
+          <p className="mt-6 text-[12px] leading-[1.7] text-muted-soft">
             Values are injected into the prompt in real-time.
           </p>
         </div>
       )}
 
-      {/* Main Prompt Viewer */}
-      <div className={`space-y-4 ${variables.length > 0 ? "lg:col-span-8" : "lg:col-span-12"}`}>
-        <div className="flex justify-between items-center mb-2">
-          <h2 className="text-2xl font-bold">Prompt Template</h2>
-          <Snippet 
-            hideSymbol 
-            color="primary" 
-            variant="flat" 
-            codeString={injectedPrompt}
+      <div className="space-y-4">
+        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <div className="space-y-1">
+            <p className="text-[12px] uppercase tracking-[0.18em] text-muted">Preview</p>
+            <h2 className="text-[24px] font-medium text-foreground">Prompt template</h2>
+          </div>
+          <button
+            type="button"
+            onClick={handleCopy}
+            className="inline-flex items-center gap-2 rounded-full border border-border bg-surface-strong px-4 py-2 text-[12px] text-foreground transition hover:bg-panel"
           >
-            Copy Final Prompt
-          </Snippet>
+            {copyState === "copied" ? <FaCheck size={12} /> : <FaRegClone size={12} />}
+            <span>
+              {copyState === "copied"
+                ? "Copied"
+                : copyState === "error"
+                  ? "Copy failed"
+                  : "Copy prompt"}
+            </span>
+          </button>
         </div>
-        
-        <div className="bg-zinc-100 dark:bg-zinc-900/50 p-6 md:p-8 rounded-3xl border border-zinc-200 dark:border-zinc-800 text-lg leading-relaxed whitespace-pre-wrap font-mono text-zinc-800 dark:text-zinc-300">
-          {injectedPrompt}
+
+        <div className="rounded-[28px] border border-border/80 bg-surface/90 p-6 shadow-[0_20px_50px_rgba(0,0,0,0.14)] backdrop-blur-sm md:p-8">
+          <pre className="whitespace-pre-wrap text-[15px] leading-[1.85] text-foreground">
+            {injectedPrompt}
+          </pre>
         </div>
       </div>
     </div>

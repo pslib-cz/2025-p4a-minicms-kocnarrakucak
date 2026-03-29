@@ -15,8 +15,8 @@ export function Sidebar() {
 
   return (
     <aside className="sticky top-0 hidden h-[calc(100vh-3rem)] w-[280px] shrink-0 px-5 lg:flex">
-      <div className="flex h-full w-full flex-col rounded-[32px] border border-border/80 bg-[#0d0d0c]/92 p-5 shadow-[0_22px_60px_rgba(0,0,0,0.28)]">
-        <div className="rounded-[24px] border border-white/6 bg-[linear-gradient(180deg,rgba(255,255,255,0.04)_0%,rgba(255,255,255,0.015)_100%)] p-4">
+      <div className="flex h-full w-full flex-col rounded-[32px] border border-border/80 bg-surface/95 p-5 shadow-[0_22px_60px_rgba(0,0,0,0.22)] backdrop-blur-sm">
+        <div className="rounded-[24px] border border-border/70 bg-[rgba(255,255,255,0.03)] p-4">
           <p className="text-[12px] uppercase tracking-[0.24em] text-muted">
             Dashboard
           </p>
@@ -28,7 +28,7 @@ export function Sidebar() {
           </p>
           <Link
             href="/"
-            className="mt-5 inline-flex items-center gap-2 rounded-full border border-white/8 bg-[#161615] px-4 py-2 text-[12px] text-foreground transition hover:bg-[#1d1d1b]"
+            className="mt-5 inline-flex items-center gap-2 rounded-full border border-border bg-surface-strong px-4 py-2 text-[12px] text-foreground transition hover:bg-panel"
           >
             <span>Open public site</span>
             <FaArrowRight size={10} />
@@ -49,15 +49,15 @@ export function Sidebar() {
                 href={item.href}
                 className={`flex items-center justify-between gap-3 rounded-[20px] px-4 py-3 transition ${
                   isActive
-                    ? "bg-[#171715] text-foreground shadow-[0_18px_35px_rgba(0,0,0,0.2)]"
-                    : "text-muted hover:bg-white/5 hover:text-foreground"
+                    ? "bg-surface-strong text-foreground shadow-[0_18px_35px_rgba(0,0,0,0.16)]"
+                    : "text-muted hover:bg-[rgba(255,255,255,0.04)] hover:text-foreground"
                 }`}
               >
                 <span className="flex items-center gap-3">
                   <span
                     className={`flex size-9 items-center justify-center rounded-full border ${
                       isActive
-                        ? "border-white/8 bg-[#10100f] text-foreground"
+                        ? "border-border bg-surface text-foreground"
                         : "border-border/80 bg-transparent text-muted"
                     }`}
                   >
@@ -75,8 +75,8 @@ export function Sidebar() {
           })}
         </nav>
 
-        <div className="space-y-4 border-t border-white/6 pt-5">
-          <div className="flex items-center justify-between gap-3 rounded-[24px] border border-white/6 bg-[#141413] px-4 py-3">
+        <div className="space-y-4 border-t border-border/70 pt-5">
+          <div className="flex items-center justify-between gap-3 rounded-[24px] border border-border/70 bg-[rgba(255,255,255,0.03)] px-4 py-3">
             <div className="min-w-0">
               <p className="text-[11px] uppercase tracking-[0.18em] text-muted">
                 Account
@@ -85,7 +85,7 @@ export function Sidebar() {
                 {session?.user?.name || "User"}
               </p>
             </div>
-            <span className="flex size-10 items-center justify-center overflow-hidden rounded-full border border-white/8 bg-[#0f0f0e] text-foreground">
+            <span className="flex size-10 items-center justify-center overflow-hidden rounded-full border border-border bg-surface-strong text-foreground">
               {session?.user?.image ? (
                 <Image
                   src={session.user.image}

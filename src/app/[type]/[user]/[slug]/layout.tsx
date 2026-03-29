@@ -1,5 +1,5 @@
-import { Metadata } from 'next';
-import { prisma } from '@/lib/prisma';
+import { Metadata } from "next";
+import { prisma } from "@/lib/prisma";
 
 type Props = {
   params: Promise<{ type: string; user: string; slug: string }>;
@@ -15,27 +15,28 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   if (!prompt || prompt.user.username !== user) {
     return {
-      title: 'Prompt Not Found',
+      title: "Prompt Not Found",
     };
   }
 
   return {
-    title: `${prompt.title} - PromptVault`,
+    title: prompt.title,
     description: prompt.description || `AI Prompt for ${prompt.title}`,
     openGraph: {
-      title: `${prompt.title} - PromptVault`,
+      title: prompt.title,
       description: prompt.description || `AI Prompt for ${prompt.title}`,
-      type: 'article',
+      type: "article",
       publishedTime: prompt.publishDate?.toISOString(),
       authors: [prompt.user.username],
+      url: `/${prompt.promptType.slug}/${prompt.user.username}/${prompt.slug}`,
     },
     twitter: {
-      card: 'summary_large_image',
-      title: `${prompt.title} - PromptVault`,
+      card: "summary_large_image",
+      title: prompt.title,
       description: prompt.description || `AI Prompt for ${prompt.title}`,
     },
     alternates: {
-      canonical: `https://promptvault.example.com/${prompt.promptType.slug}/${prompt.user.username}/${prompt.slug}`,
+      canonical: `/${prompt.promptType.slug}/${prompt.user.username}/${prompt.slug}`,
     },
   };
 }

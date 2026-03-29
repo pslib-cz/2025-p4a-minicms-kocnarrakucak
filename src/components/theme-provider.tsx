@@ -1,43 +1,14 @@
 "use client";
 
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
-
-type Theme = "light" | "dark";
+import { buildThemeCookie, THEME_STORAGE_KEY, type Theme } from "@/lib/theme";
 
 type ThemeContextValue = {
   theme: Theme;
   setTheme: (theme: Theme) => void;
 };
 
-const STORAGE_KEY = "theme";
-
 const ThemeContext = createContext<ThemeContextValue | undefined>(undefined);
-
-function getSystemTheme(): Theme {
-  if (typeof window === "undefined") {
-    return "dark";
-  }
-
-  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-}
-
-function readStoredTheme(): Theme | null {
-  if (typeof window === "undefined") {
-    return null;
-  }
-
-  try {
-    const storedTheme = window.localStorage.getItem(STORAGE_KEY);
-
-    if (storedTheme === "light" || storedTheme === "dark") {
-      return storedTheme;
-    }
-  } catch {
-    return null;
-  }
-
-  return null;
-}
 
 function applyTheme(theme: Theme) {
   const root = document.documentElement;
@@ -47,38 +18,33 @@ function applyTheme(theme: Theme) {
   root.style.colorScheme = theme;
 }
 
-export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<Theme>(() => readStoredTheme() ?? getSystemTheme());
+function persistTheme(theme: Theme) {
+  try {
+    window.localStorage.setItem(THEME_STORAGE_KEY, theme);
+  } catch {
+    // Ignore storage failures in private mode or restricted environments.
+  }
+
+  document.cookie = buildThemeCookie(theme);
+}
+
+export function ThemeProvider({
+  children,
+  initialTheme,
+}: {
+  children: React.ReactNode;
+  initialTheme: Theme;
+}) {
+  const [theme, setThemeState] = useState<Theme>(initialTheme);
+
+  const setTheme = (nextTheme: Theme) => {
+    setThemeState(nextTheme);
+    persistTheme(nextTheme);
+  };
 
   useEffect(() => {
     applyTheme(theme);
-
-    try {
-      window.localStorage.setItem(STORAGE_KEY, theme);
-    } catch {
-      // Ignore storage failures in private mode or restricted environments.
-    }
   }, [theme]);
-
-  useEffect(() => {
-    if (readStoredTheme()) {
-      return;
-    }
-
-    const mediaQuery = window.matchMedia("(prefers-color-scheme: dark)");
-
-    const handleChange = () => {
-      setTheme(getSystemTheme());
-    };
-
-    if (typeof mediaQuery.addEventListener === "function") {
-      mediaQuery.addEventListener("change", handleChange);
-      return () => mediaQuery.removeEventListener("change", handleChange);
-    }
-
-    mediaQuery.addListener(handleChange);
-    return () => mediaQuery.removeListener(handleChange);
-  }, []);
 
   const value = useMemo(
     () => ({

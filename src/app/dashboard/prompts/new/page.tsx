@@ -1,3 +1,4 @@
+import { DashboardPageHeader } from "@/components/dashboard/DashboardPageHeader";
 import { PromptForm } from "@/components/dashboard/PromptForm";
 import { prisma } from "@/lib/prisma";
 
@@ -8,12 +9,12 @@ export default async function NewPromptPage() {
   ]);
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight">Create New Prompt</h1>
-        <p className="text-zinc-500 mt-1">Design your prompt and use {"{{ variable }}"} syntax to make it dynamic.</p>
-      </div>
-
+    <div className="space-y-8">
+      <DashboardPageHeader
+        eyebrow="Composer"
+        title="Create New Prompt"
+        description="Design a new prompt template, add metadata and expose variables for the public detail page."
+      />
       <PromptForm tags={tags} promptTypes={promptTypes} />
     </div>
   );

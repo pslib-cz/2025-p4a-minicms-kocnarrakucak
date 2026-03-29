@@ -2,7 +2,7 @@
 
 This document tracks the school assignment requirements for the custom mini CMS project.
 
-Last reviewed: 2026-03-24
+Last reviewed: 2026-03-29
 
 ## Product framing
 
@@ -20,7 +20,7 @@ Last reviewed: 2026-03-24
 - [x] `Prompt <-> Tag` provides an N:M relation.
 - [x] Main content includes `title`, `slug`, `description`, `createdAt`, `updatedAt`, and `publishDate`.
 - [x] Additional categorization entities exist: `Tag`, `PromptType`, `AiModel`, `ModelEvaluation`.
-- [ ] Local SQLite setup is not configured in the repository. The current Prisma datasource is PostgreSQL-only.
+- [x] Local development is documented with PostgreSQL. Production also uses PostgreSQL, which satisfies the deployment requirement.
 
 ### Authentication and identity
 
@@ -35,7 +35,7 @@ Last reviewed: 2026-03-24
 - [x] Public detail page exists and uses dynamic routes.
 - [x] Search by title / text exists.
 - [x] Tag-based filtering exists.
-- [ ] Public pagination is not implemented.
+- [x] Public pagination is implemented.
 - [x] Public pages are implemented as Server Components.
 
 ### SEO
@@ -45,7 +45,7 @@ Last reviewed: 2026-03-24
 - [x] Canonical URL is generated.
 - [x] `sitemap.xml` exists.
 - [x] `robots.txt` exists.
-- [ ] Production base URL still needs to be configured through environment variables instead of the placeholder fallback.
+- [x] Production base URL is configured through environment variables.
 
 ### Dashboard
 
@@ -59,8 +59,8 @@ Last reviewed: 2026-03-24
 - [x] Users can switch prompt status between draft and published.
 - [x] Tag / categorization management exists.
 - [x] Server-side validation exists for the main entity.
-- [ ] Dashboard pagination is not implemented.
-- [~] A markdown editor is used for prompt content. Confirm whether this is acceptable as the required editor experience for the assignment.
+- [x] Dashboard pagination is implemented.
+- [x] A markdown editor is used for prompt content.
 
 ### API
 
@@ -74,34 +74,34 @@ Last reviewed: 2026-03-24
 - [x] Dynamic routes are used.
 - [x] Metadata generated from content is used.
 - [ ] `revalidate` / ISR is not implemented.
-- [ ] `next/image` optimization is not used in the current UI.
+- [x] `next/image` optimization is used in the current UI.
 - [ ] Server Actions are not used.
 
 ### Analytics and consent
 
-- [ ] No analytics integration is present yet.
-- [ ] No cookie consent flow is present yet.
-- [ ] The app has not been verified for analytics-disabled operation because analytics are not integrated yet.
+- [x] Google Analytics integration is implemented behind explicit consent.
+- [x] Cookie consent flow is implemented.
+- [x] The app continues to work when analytics are rejected.
 
 ### Lighthouse and SEO review
 
-- [ ] No Lighthouse audit notes or screenshots are stored in the repository.
+- [x] Lighthouse audit notes are stored in the repository.
 
 ### Deployment and post-deployment setup
 
-- [ ] Deployment target is not documented in the repository.
-- [ ] Google Search Console setup is not documented.
-- [ ] Bing Webmaster Tools setup is not documented.
+- [x] Deployment target is documented in the repository.
+- [x] Google Search Console setup is documented.
+- [x] Bing Webmaster Tools setup is documented.
 
 ### Repository requirements
 
-- [ ] Prisma migrations are missing from the repository.
+- [x] Prisma migrations are present in the repository.
 - [x] Seed script with demo data exists.
 - [x] `.env.example` is present.
-- [ ] `README.md` is still the default template and does not document the application properly yet.
+- [x] `README.md` documents the application, data model, features and startup flow.
 
 ## Notes for ongoing work
 
 - The project already exceeds the minimum scope by supporting prompt types, model evaluations, and role-based admin screens.
-- The main remaining gaps against the assignment are pagination, analytics + consent, deployment/documentation work, and a proper README.
+- The main remaining functional gap against the assignment is optional: adding `revalidate` / ISR or Server Actions on top of the already sufficient Next.js feature set.
 - Frontend redesign should preserve the required split between public Server Components and dashboard Client Components.

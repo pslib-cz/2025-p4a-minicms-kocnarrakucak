@@ -63,7 +63,7 @@ export function VisitorEvaluationForm({ promptId, models, existingEvaluations }:
 
   if (availableModels.length === 0) {
     return (
-      <p className="text-sm text-zinc-500 dark:text-zinc-400 italic">
+      <p className="text-[13px] italic text-muted">
         You&apos;ve already rated this prompt with all available AI models.
       </p>
     );
@@ -73,9 +73,8 @@ export function VisitorEvaluationForm({ promptId, models, existingEvaluations }:
 
   return (
     <div className="space-y-5">
-      {/* Model Select */}
       <div>
-        <label className="block text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-2">
+        <label className="mb-3 block text-[14px] text-foreground">
           Which AI Model did you use?
         </label>
         <div className="flex flex-wrap gap-2">
@@ -84,10 +83,10 @@ export function VisitorEvaluationForm({ promptId, models, existingEvaluations }:
               key={m.id}
               type="button"
               onClick={() => setSelectedModelId(m.id)}
-              className={`px-4 py-2 rounded-full text-sm font-medium border transition-all ${
+              className={`rounded-full border px-4 py-2 text-[13px] transition ${
                 selectedModelId === m.id
-                  ? "bg-blue-600 text-white border-blue-600 shadow-md"
-                  : "bg-white dark:bg-zinc-900 text-zinc-700 dark:text-zinc-300 border-zinc-200 dark:border-zinc-700 hover:border-blue-400"
+                  ? "border-border bg-surface-strong text-foreground shadow-[0_18px_35px_rgba(0,0,0,0.16)]"
+                  : "border-border bg-surface text-muted hover:text-foreground"
               }`}
             >
               {m.name}
@@ -97,12 +96,11 @@ export function VisitorEvaluationForm({ promptId, models, existingEvaluations }:
         </div>
       </div>
 
-      {/* Stars */}
       <div>
-        <label className="block text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-2">
+        <label className="mb-3 block text-[14px] text-foreground">
           Your rating
         </label>
-        <div className="flex space-x-1">
+        <div className="flex flex-wrap gap-2">
           {[1, 2, 3, 4, 5].map((val) => (
             <button
               key={val}
@@ -110,10 +108,10 @@ export function VisitorEvaluationForm({ promptId, models, existingEvaluations }:
               onMouseEnter={() => setHoveredStar(val)}
               onMouseLeave={() => setHoveredStar(0)}
               onClick={() => setRating(val)}
-              className={`text-3xl transition-all duration-100 ${
+              className={`flex size-11 items-center justify-center rounded-full border text-xl transition ${
                 val <= displayRating
-                  ? "text-yellow-400 scale-110"
-                  : "text-zinc-300 dark:text-zinc-600 hover:text-yellow-300"
+                  ? "border-yellow-500/40 bg-yellow-500/10 text-yellow-400"
+                  : "border-border text-muted hover:text-yellow-300"
               }`}
             >
               <FaStar />
@@ -122,27 +120,30 @@ export function VisitorEvaluationForm({ promptId, models, existingEvaluations }:
         </div>
       </div>
 
-      {/* Comment */}
       <div>
-        <label className="block text-sm font-semibold text-zinc-700 dark:text-zinc-300 mb-2">
-          Comment <span className="font-normal text-zinc-400">(optional)</span>
+        <label className="mb-3 block text-[14px] text-foreground">
+          Comment <span className="font-normal text-muted">(optional)</span>
         </label>
         <textarea
           rows={3}
           value={comment}
           onChange={(e) => setComment(e.target.value)}
           placeholder="How well did this model handle the prompt?"
-          className="w-full bg-white dark:bg-zinc-900 border border-zinc-200 dark:border-zinc-700 rounded-xl px-4 py-3 text-sm text-zinc-800 dark:text-zinc-200 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none transition"
+          className="w-full rounded-[20px] border border-border bg-[rgba(255,255,255,0.03)] px-4 py-3 text-[14px] text-foreground placeholder:text-muted focus:border-foreground/30 focus:outline-none resize-none transition"
         />
       </div>
 
-      {error && <p className="text-sm text-red-500">{error}</p>}
+      {error && (
+        <p className="rounded-[18px] border border-red-500/30 bg-red-500/10 px-4 py-3 text-[13px] text-red-300">
+          {error}
+        </p>
+      )}
 
       <button
         type="button"
         onClick={handleSubmit}
         disabled={!selectedModelId || rating === 0 || isSubmitting}
-        className="px-6 py-2.5 rounded-xl bg-blue-600 text-white font-semibold text-sm hover:bg-blue-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors shadow-md"
+        className="rounded-full border border-border bg-surface-strong px-6 py-3 text-[13px] text-foreground shadow-[0_18px_35px_rgba(0,0,0,0.16)] transition hover:bg-panel disabled:cursor-not-allowed disabled:opacity-40"
       >
         {isSubmitting ? "Submitting…" : "Submit Rating"}
       </button>
