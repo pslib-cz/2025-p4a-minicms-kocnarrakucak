@@ -39,11 +39,11 @@ export function EvaluationForm({ promptId, models, existingEvaluations }: Evalua
 
   const selectClassNames = {
     label: "text-muted",
-    value: "pr-2 text-foreground",
+    value: "ml-auto pr-2 text-right text-foreground",
     trigger:
       "min-h-12 rounded-[18px] border border-border bg-[rgba(255,255,255,0.03)] shadow-none data-[focus=true]:border-foreground/30",
     innerWrapper: "min-w-0",
-    selectorIcon: "ml-auto shrink-0 text-muted",
+    selectorIcon: "shrink-0 text-muted",
     popoverContent: "border border-border bg-surface text-foreground",
   } as const;
 
