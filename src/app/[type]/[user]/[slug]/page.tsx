@@ -6,6 +6,7 @@ import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import { auth } from "@/lib/auth";
 import { VisitorEvaluationForm } from "@/components/prompt/VisitorEvaluationForm";
+import { PromptEvaluations } from "@/components/prompt/prompt-evaluations";
 
 export default async function PromptDetailPage({
   params,
@@ -24,7 +25,16 @@ export default async function PromptDetailPage({
         tags: true,
         promptType: true,
         evaluations: {
-          include: { aiModel: true },
+          include: {
+            aiModel: true,
+            user: {
+              select: {
+                id: true,
+                name: true,
+                username: true,
+              },
+            },
+          },
         },
       },
     }),
@@ -41,6 +51,7 @@ export default async function PromptDetailPage({
 
   const isAuthor = session?.user?.id === prompt.userId;
   const isLoggedIn = !!session?.user?.id;
+  const currentUserRole = session?.user?.role;
 
   // Evaluations submitted by the current user for this prompt
   const myEvaluations = isLoggedIn
@@ -195,22 +206,22 @@ export default async function PromptDetailPage({
 
             <div className="mt-6">
               {isLoggedIn ? (
-              <VisitorEvaluationForm
-                promptId={prompt.id}
-                models={allModels}
-                existingEvaluations={myEvaluations}
-              />
-            ) : (
-              <p className="text-[14px] text-muted">
-                <Link
-                  href="/api/auth/signin"
-                  className="text-foreground underline underline-offset-4"
-                >
-                  Sign in
-                </Link>{" "}
-                to rate this prompt.
-              </p>
-            )}
+                <VisitorEvaluationForm
+                  promptId={prompt.id}
+                  models={allModels}
+                  existingEvaluations={myEvaluations}
+                />
+              ) : (
+                <p className="text-[14px] text-muted">
+                  <Link
+                    href="/api/auth/signin"
+                    className="text-foreground underline underline-offset-4"
+                  >
+                    Sign in
+                  </Link>{" "}
+                  to rate this prompt.
+                </p>
+              )}
             </div>
           </section>
         )}
@@ -221,29 +232,14 @@ export default async function PromptDetailPage({
               <p className="text-[12px] uppercase tracking-[0.18em] text-muted">Showcase</p>
               <h2 className="text-[24px] font-medium text-foreground">Model showcases</h2>
             </div>
-            <div className="grid gap-6 md:grid-cols-2">
-              {prompt.evaluations.map((ev) => (
-                <article key={ev.id} className={panelClassName}>
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="space-y-1">
-                      <h3 className="text-[20px] font-medium text-foreground">{ev.aiModel.name}</h3>
-                      <p className="text-[12px] uppercase tracking-[0.16em] text-muted">{ev.aiModel.provider}</p>
-                    </div>
-                    <div className="flex text-yellow-400 text-sm">
-                      {[...Array(5)].map((_, i) => (
-                        <FaStar key={i} className={i < ev.rating ? "" : "text-muted-soft"} />
-                      ))}
-                    </div>
-                  </div>
-
-                  {ev.comment && (
-                    <div className="mt-5 rounded-[22px] border border-border/80 bg-[rgba(255,255,255,0.02)] px-5 py-4">
-                      <p className="text-[14px] leading-[1.8] text-muted">{ev.comment}</p>
-                    </div>
-                  )}
-                </article>
-              ))}
-            </div>
+            <PromptEvaluations
+              promptId={prompt.id}
+              promptOwnerId={prompt.userId}
+              currentUserId={session?.user?.id}
+              currentUserRole={currentUserRole}
+              evaluations={prompt.evaluations}
+              panelClassName={panelClassName}
+            />
           </section>
         )}
       </main>

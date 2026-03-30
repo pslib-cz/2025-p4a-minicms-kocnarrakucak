@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { FaStar } from "react-icons/fa";
 
 type AiModel = {
@@ -20,6 +21,7 @@ type Props = {
 };
 
 export function VisitorEvaluationForm({ promptId, models, existingEvaluations }: Props) {
+  const router = useRouter();
   const [submittedModelIds, setSubmittedModelIds] = useState<string[]>(
     existingEvaluations.map((e) => e.aiModelId)
   );
@@ -29,6 +31,10 @@ export function VisitorEvaluationForm({ promptId, models, existingEvaluations }:
   const [comment, setComment] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    setSubmittedModelIds(existingEvaluations.map((evaluation) => evaluation.aiModelId));
+  }, [existingEvaluations]);
 
   const availableModels = models.filter((m) => !submittedModelIds.includes(m.id));
 
@@ -50,6 +56,7 @@ export function VisitorEvaluationForm({ promptId, models, existingEvaluations }:
         setRating(0);
         setHoveredStar(0);
         setComment("");
+        router.refresh();
       } else {
         const data = await res.json();
         setError(data.error || "Failed to submit rating.");

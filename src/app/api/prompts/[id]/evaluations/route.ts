@@ -47,6 +47,13 @@ export async function POST(
       },
       include: {
         aiModel: true,
+        user: {
+          select: {
+            id: true,
+            name: true,
+            username: true,
+          },
+        },
       },
     });
 

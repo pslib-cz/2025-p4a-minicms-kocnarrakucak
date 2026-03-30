@@ -3,6 +3,7 @@ import Link from "next/link";
 import { FaArrowRight, FaRegUser, FaSearch } from "react-icons/fa";
 import { PaginationRail } from "@/components/home/pagination-rail";
 import { PromptCard, type PromptCardItem } from "@/components/home/prompt-card";
+import { HomeTagFilter } from "@/components/home/tag-filter";
 import { ThemeSwitch } from "@/components/theme-switch";
 import { prisma } from "@/lib/prisma";
 
@@ -173,27 +174,7 @@ export default async function Home({
           </div>
 
           <div className="mt-5 flex justify-center">
-            <div className="flex max-w-full flex-wrap items-center justify-center gap-x-3 gap-y-2 rounded-full border border-border bg-surface px-5 py-3 text-[12px] text-muted shadow-[0_18px_45px_rgba(0,0,0,0.18)] md:px-6">
-              <Link
-                href="/"
-                className={`transition ${!tag ? "text-foreground" : "hover:text-foreground"}`}
-              >
-                All
-              </Link>
-              <span className="text-muted-soft">|</span>
-              {visibleTags.map((item) => (
-                <Link
-                  key={item.id}
-                  href={`/?tag=${encodeURIComponent(item.name)}`}
-                  className={`transition ${tag === item.name ? "text-foreground" : "hover:text-foreground"}`}
-                >
-                  {item.name}
-                </Link>
-              ))}
-              {allTags.length > visibleTags.length && (
-                <span className="text-muted-soft">Show all</span>
-              )}
-            </div>
+            <HomeTagFilter tags={visibleTags} activeTag={tag} searchQuery={q} />
           </div>
         </section>
 
