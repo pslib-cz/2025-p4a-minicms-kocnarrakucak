@@ -93,13 +93,21 @@ body {
 .dashboard-editor .w-md-editor,
 .dashboard-editor .w-md-editor-toolbar,
 .dashboard-editor .w-md-editor-content,
+.dashboard-editor .w-md-editor-preview {
+  background: var(--editor-surface) !important;
+}
+
 .dashboard-editor .w-md-editor-text,
 .dashboard-editor .w-md-editor-text-pre,
 .dashboard-editor .w-md-editor-text-input,
+.dashboard-editor .wmde-markdown {
+  background: transparent !important;
+}
+
+.dashboard-editor .w-md-editor-text,
 .dashboard-editor .w-md-editor-preview,
 .dashboard-editor .wmde-markdown {
-  background: var(--editor-surface) !important;
-  color: var(--foreground) !important;
+  color: var(--editor-text) !important;
 }
 
 .dashboard-editor .w-md-editor {
@@ -130,9 +138,7 @@ body {
 }
 
 .dashboard-editor .w-md-editor-text-pre,
-.dashboard-editor .w-md-editor-text-pre > code,
-.dashboard-editor .w-md-editor-text-pre > code span,
-.dashboard-editor .w-md-editor-text-pre > code .token {
+.dashboard-editor .w-md-editor-text-pre > code {
   color: var(--editor-text) !important;
 }
 
