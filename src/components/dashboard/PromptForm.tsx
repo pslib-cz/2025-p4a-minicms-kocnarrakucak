@@ -96,12 +96,12 @@ export function PromptForm({ initialData, tags, promptTypes }: PromptFormProps) 
 
   const selectClassNames = {
     label: "text-muted",
-    value: "pr-5 text-foreground",
+    value: "pr-2 text-foreground",
     description: "text-muted-soft",
     trigger:
       "min-h-12 rounded-[18px] border border-border bg-[rgba(255,255,255,0.03)] shadow-none data-[focus=true]:border-foreground/30",
-    innerWrapper: "pr-2",
-    selectorIcon: "translate-x-1 text-muted",
+    innerWrapper: "min-w-0",
+    selectorIcon: "ml-auto shrink-0 text-muted",
     popoverContent: "border border-border bg-surface text-foreground",
   } as const;
 
