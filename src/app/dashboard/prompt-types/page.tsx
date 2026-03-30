@@ -150,7 +150,7 @@ export default function PromptTypesPage() {
                 <Input
                   isRequired
                   aria-label="Name"
-                  placeholder='e.g. "Text to image"'
+                  placeholder='e.g. "Summarization"'
                   value={formData.name}
                   onValueChange={handleNameChange}
                   classNames={{
@@ -164,7 +164,7 @@ export default function PromptTypesPage() {
                 <Input
                   isRequired
                   aria-label="Slug"
-                  placeholder='e.g. "text-to-image"'
+                  placeholder='e.g. "summarization"'
                   value={formData.slug}
                   onValueChange={handleSlugChange}
                   classNames={{

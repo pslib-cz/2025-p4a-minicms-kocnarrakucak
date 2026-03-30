@@ -31,7 +31,7 @@ async function main() {
   const modelsData = [
     { name: "GPT-4o", provider: "OpenAI", description: "Flagship model" },
     { name: "Claude 3.5 Sonnet", provider: "Anthropic", description: "Great for coding" },
-    { name: "Midjourney v6", provider: "Midjourney", description: "Image generation model" },
+    { name: "Gemini 1.5 Pro", provider: "Google", description: "Strong for long-context drafting" },
   ];
 
   const aiModels = [];
@@ -48,10 +48,10 @@ async function main() {
 
   const promptTypesData = [
     { name: "Text to text", slug: "text-to-text" },
-    { name: "Text to image", slug: "text-to-image" },
-    { name: "Image to image", slug: "image-to-image" },
-    { name: "Text to video", slug: "text-to-video" },
-    { name: "Text to audio", slug: "text-to-audio" },
+    { name: "Summarization", slug: "summarization" },
+    { name: "Translation", slug: "translation" },
+    { name: "Content editing", slug: "content-editing" },
+    { name: "Long-form writing", slug: "long-form-writing" },
     { name: "Code generation", slug: "code-generation" },
   ];
 

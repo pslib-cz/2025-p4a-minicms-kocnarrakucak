@@ -42,10 +42,6 @@ function buildRatingLabel(prompt: PromptCardItem) {
 }
 
 function buildPromptVariant(prompt: PromptCardItem) {
-  if (prompt.promptType.slug.includes("image")) {
-    return "image";
-  }
-
   if (prompt.promptType.slug.includes("code")) {
     return "code";
   }
@@ -62,24 +58,6 @@ function PreviewPanel({
 }) {
   const variant = buildPromptVariant(prompt);
   const excerpt = buildExcerpt(prompt, featured ? 220 : 150);
-
-  if (variant === "image") {
-    return (
-      <div
-        className={`grid gap-4 rounded-[22px] border border-border/80 bg-black/20 p-4 ${
-          featured ? "md:grid-cols-[minmax(0,1.1fr)_minmax(0,0.9fr)]" : ""
-        }`}
-      >
-        <div className="min-h-[180px] rounded-[18px] border border-border/80 bg-[radial-gradient(circle_at_28%_22%,rgba(245,245,245,0.36),transparent_26%),radial-gradient(circle_at_68%_38%,rgba(255,255,255,0.18),transparent_18%),linear-gradient(140deg,#070707_16%,#3e3d39_61%,#141414_100%)]" />
-        <div className="space-y-3 text-[14px] leading-[1.6] text-muted">
-          <p>{excerpt}</p>
-          <p className="text-muted-soft">
-            Visual prompts get a large preview surface in the library grid.
-          </p>
-        </div>
-      </div>
-    );
-  }
 
   if (variant === "code") {
     const codeLines = [
@@ -112,7 +90,7 @@ function PreviewPanel({
       <p className="text-[13px] uppercase tracking-[0.18em] text-muted-soft">Prompt</p>
       <p className="mt-3 text-[14px] leading-[1.6] text-muted">{excerpt}</p>
       <div className="mt-5 border-t border-border/70 pt-4">
-        <p className="text-[24px] font-medium leading-none text-foreground">Output</p>
+        <p className="text-[24px] font-medium leading-none text-foreground">Response Shape</p>
         <p className="mt-3 text-[14px] leading-[1.6] text-muted">
           {buildExcerpt(
             {

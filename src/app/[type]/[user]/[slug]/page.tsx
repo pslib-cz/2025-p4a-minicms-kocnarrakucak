@@ -1,12 +1,13 @@
 import { prisma } from "@/lib/prisma";
 import { notFound } from "next/navigation";
 import { VariableInjector } from "@/components/VariableInjector";
-import { FaArrowLeft, FaArrowRight, FaRegUser, FaStar, FaTag } from "react-icons/fa";
+import { FaArrowLeft, FaRegUser, FaStar, FaTag } from "react-icons/fa";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import { auth } from "@/lib/auth";
 import { VisitorEvaluationForm } from "@/components/prompt/VisitorEvaluationForm";
 import { PromptEvaluations } from "@/components/prompt/prompt-evaluations";
+import { PromptOwnerActions } from "@/components/prompt/prompt-owner-actions";
 
 export default async function PromptDetailPage({
   params,
@@ -97,13 +98,7 @@ export default async function PromptDetailPage({
           </Link>
 
           {isAuthor && (
-            <Link
-              href={`/dashboard/prompts/${prompt.id}/edit`}
-              className="inline-flex items-center gap-2 rounded-full border border-border bg-surface-strong px-4 py-2 text-[13px] text-foreground shadow-[0_18px_35px_rgba(0,0,0,0.16)] transition hover:bg-panel"
-            >
-              <span>Edit prompt</span>
-              <FaArrowRight size={11} />
-            </Link>
+            <PromptOwnerActions promptId={prompt.id} />
           )}
         </div>
       </header>
@@ -229,8 +224,8 @@ export default async function PromptDetailPage({
         {prompt.evaluations.length > 0 && (
           <section className="space-y-6">
             <div className="space-y-2">
-              <p className="text-[12px] uppercase tracking-[0.18em] text-muted">Showcase</p>
-              <h2 className="text-[24px] font-medium text-foreground">Model showcases</h2>
+              <p className="text-[12px] uppercase tracking-[0.18em] text-muted">Reviews</p>
+              <h2 className="text-[24px] font-medium text-foreground">Model feedback</h2>
             </div>
             <PromptEvaluations
               promptId={prompt.id}
