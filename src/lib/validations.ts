@@ -14,7 +14,7 @@ export const aiModelSchema = z.object({
 export const promptSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters"),
   slug: z.string().min(3, "Slug must be at least 3 characters"),
-  promptTypeId: z.string(), // replacing old type enum
+  promptTypeId: z.string().min(1, "Prompt type is required"),
   description: z.string().optional().nullable(),
   systemPrompt: z.string().optional().nullable(),
   userPrompt: z.string().min(5, "User prompt is required"),

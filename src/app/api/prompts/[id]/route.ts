@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { auth } from "@/lib/auth";
 import { promptSchema } from "@/lib/validations";
+import { validatePromptRelationSelection } from "@/lib/prompt-relations";
 
 export async function GET(
   _req: NextRequest,
@@ -65,6 +66,29 @@ export async function PUT(
     if (prompt.userId !== session.user.id) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
 
     const { tags, ...promptData } = result.data;
+    const [promptType, existingTags] = await Promise.all([
+      prisma.promptType.findUnique({
+        where: { id: promptData.promptTypeId },
+        select: { id: true },
+      }),
+      tags.length > 0
+        ? prisma.tag.findMany({
+            where: { id: { in: tags } },
+            select: { id: true },
+          })
+        : Promise.resolve([]),
+    ]);
+
+    const relationValidation = validatePromptRelationSelection({
+      promptTypeId: promptData.promptTypeId,
+      availablePromptTypeIds: promptType ? [promptType.id] : [],
+      tagIds: tags,
+      availableTagIds: existingTags.map((tag) => tag.id),
+    });
+
+    if (!relationValidation.valid) {
+      return NextResponse.json({ error: relationValidation.error }, { status: 400 });
+    }
 
     const updatedPrompt = await prisma.prompt.update({
       where: { id },

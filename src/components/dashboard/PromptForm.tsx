@@ -1,10 +1,11 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Input, Textarea, Button, Select, SelectItem, Chip } from "@nextui-org/react";
 import { DashboardPanel } from "@/components/dashboard/DashboardPanel";
 import { FormField } from "@/components/FormField";
+import { resolvePromptTypeSelection } from "@/lib/prompt-relations";
 import slugify from "slugify";
 import dynamic from "next/dynamic";
 import "@uiw/react-md-editor/markdown-editor.css";
@@ -63,6 +64,7 @@ export function PromptForm({ initialData, tags, promptTypes }: PromptFormProps) 
 
   const selectedPromptType = promptTypes.find((promptType) => promptType.id === formData.promptTypeId);
   const selectedTags = tags.filter((tag) => formData.tags.includes(tag.id));
+  const hasPromptTypes = promptTypes.length > 0;
   const statusOptions = [
     {
       value: "DRAFT" as const,
@@ -109,8 +111,25 @@ export function PromptForm({ initialData, tags, promptTypes }: PromptFormProps) 
     }));
   };
 
+  useEffect(() => {
+    const nextPromptTypeId = resolvePromptTypeSelection(formData.promptTypeId, promptTypes);
+
+    if (nextPromptTypeId !== formData.promptTypeId) {
+      setFormData((prev) => ({
+        ...prev,
+        promptTypeId: nextPromptTypeId,
+      }));
+    }
+  }, [formData.promptTypeId, promptTypes]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!hasPromptTypes) {
+      alert("Create at least one prompt type before saving a prompt.");
+      return;
+    }
+
     setIsSubmitting(true);
     
     try {
@@ -200,6 +219,7 @@ export function PromptForm({ initialData, tags, promptTypes }: PromptFormProps) 
           <Button
             type="submit"
             isLoading={isSubmitting}
+            isDisabled={!hasPromptTypes}
             className="h-11 rounded-full border border-border bg-surface-strong px-5 text-[13px] text-foreground shadow-[0_18px_35px_rgba(0,0,0,0.16)] transition hover:bg-panel"
           >
             {initialData ? "Save Changes" : "Create Prompt"}
@@ -345,12 +365,19 @@ export function PromptForm({ initialData, tags, promptTypes }: PromptFormProps) 
               <h2 className="text-[24px] font-medium text-foreground">Structure and tags</h2>
             </div>
 
+            {!hasPromptTypes && (
+              <div className="rounded-[22px] border border-amber-500/30 bg-amber-500/8 px-4 py-4 text-[13px] leading-[1.7] text-amber-100 dark:text-amber-100">
+                Create at least one prompt type in the Prompt Types section before publishing a new prompt.
+              </div>
+            )}
+
             <FormField label="Prompt type">
               <Select
                 aria-label="Prompt type"
                 placeholder="Choose prompt type"
                 selectedKeys={formData.promptTypeId ? [formData.promptTypeId] : []}
                 onChange={(e) => setFormData({ ...formData, promptTypeId: e.target.value })}
+                isDisabled={!hasPromptTypes}
                 classNames={selectClassNames}
               >
                 {promptTypes.map((promptType) => (

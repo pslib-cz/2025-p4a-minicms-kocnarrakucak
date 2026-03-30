@@ -65,6 +65,31 @@ body {
   color: var(--foreground);
 }
 
+.dashboard-editor {
+  --editor-surface: color-mix(in srgb, var(--surface) 88%, black 12%);
+  --editor-surface-muted: color-mix(in srgb, var(--surface-strong) 88%, black 12%);
+  --editor-border: color-mix(in srgb, var(--border) 80%, transparent);
+  --editor-text: var(--foreground);
+  --editor-placeholder: var(--muted-soft);
+  --editor-muted: var(--muted);
+  --editor-accent: color-mix(in srgb, var(--foreground) 88%, transparent);
+}
+
+.dashboard-editor .wmde-markdown-var,
+.dashboard-editor .w-md-editor,
+.dashboard-editor .w-md-editor-preview {
+  --color-fg-default: var(--editor-text) !important;
+  --color-fg-muted: var(--editor-muted) !important;
+  --color-fg-subtle: var(--editor-placeholder) !important;
+  --color-canvas-default: var(--editor-surface) !important;
+  --color-canvas-subtle: var(--editor-surface-muted) !important;
+  --color-border-default: var(--editor-border) !important;
+  --color-border-muted: var(--editor-border) !important;
+  --color-neutral-muted: color-mix(in srgb, var(--foreground) 9%, transparent) !important;
+  --color-accent-fg: var(--editor-accent) !important;
+  --color-accent-emphasis: var(--editor-accent) !important;
+}
+
 .dashboard-editor .w-md-editor,
 .dashboard-editor .w-md-editor-toolbar,
 .dashboard-editor .w-md-editor-content,
@@ -73,7 +98,7 @@ body {
 .dashboard-editor .w-md-editor-text-input,
 .dashboard-editor .w-md-editor-preview,
 .dashboard-editor .wmde-markdown {
-  background: color-mix(in srgb, var(--surface) 88%, black 12%) !important;
+  background: var(--editor-surface) !important;
   color: var(--foreground) !important;
 }
 
@@ -102,4 +127,20 @@ body {
 .dashboard-editor .w-md-editor-text-input,
 .dashboard-editor .w-md-editor-text-pre > code {
   font-family: var(--font-ibm-plex-mono), monospace !important;
+}
+
+.dashboard-editor .w-md-editor-text-pre,
+.dashboard-editor .w-md-editor-text-pre > code,
+.dashboard-editor .w-md-editor-text-pre > code span,
+.dashboard-editor .w-md-editor-text-pre > code .token {
+  color: var(--editor-text) !important;
+}
+
+.dashboard-editor .w-md-editor-text-input {
+  caret-color: var(--editor-text) !important;
+}
+
+.dashboard-editor .w-md-editor-text-input::placeholder {
+  color: var(--editor-placeholder) !important;
+  -webkit-text-fill-color: var(--editor-placeholder) !important;
 }
